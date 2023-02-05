@@ -7,6 +7,12 @@ public:
     Position pos;
     int currentColor;
 
+    State()
+    {
+        currentColor = WHITE;
+        pos = Position();
+    }
+
     State(string fen)
     {
         currentColor = WHITE;
