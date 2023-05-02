@@ -1,5 +1,4 @@
 #include "globals.h"
-#include "bitboard.cpp"
 
 class Position
 {

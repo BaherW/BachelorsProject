@@ -11,9 +11,9 @@ public:
         board = 0ULL;
     }
 
-    BitBoard(U64 board)
+    BitBoard(U64 b)
     {
-        board = board;
+        board = b;
     }
 
     void set_bit(int n)
@@ -36,9 +36,19 @@ public:
         return BitBoard(board & rhs.board);
     }
 
+    BitBoard operator&=(const BitBoard &rhs)
+    {
+        return BitBoard(board &= rhs.board);
+    }
+
     BitBoard operator|(const BitBoard &rhs)
     {
         return BitBoard(board | rhs.board);
+    }
+
+    BitBoard operator|=(const BitBoard &rhs)
+    {
+        return BitBoard(board |= rhs.board);
     }
 
     BitBoard operator!()
@@ -46,6 +56,17 @@ public:
         return BitBoard(~board);
     }
 
+    BitBoard operator>>(int n) const
+    {
+        return BitBoard(board >> n);
+    }
+
+    BitBoard operator<<(int n) const
+    {
+        return BitBoard(board << n);
+    }
+
+    
     bool operator==(const BitBoard &rhs)
     {
         return board == rhs.board;

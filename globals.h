@@ -3,29 +3,59 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+typedef uint64_t U64;
 using namespace std;
 
-typedef uint64_t U64;
+#include "bitboard.cpp"
 
 enum color
 {
-    WHITE = 0,
-    BLACK = 1,
-    BOTH = 2
+    WHITE,
+    BLACK,
+    BOTH
+};
+
+enum pieceType
+{
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING
 };
 
 enum piece
 {
-    wPAWN = 0,
-    wKNIGHT = 1,
-    wBISHOP = 2,
-    wROOK = 3,
-    wQUEEN = 4,
-    wKING = 5,
-    bPAWN = 6,
-    bKNIGHT = 7,
-    bBISHOP = 8,
-    bROOK = 9,
-    bQUEEN = 10,
-    bKING = 11
+    wPAWN,
+    wKNIGHT,
+    wBISHOP,
+    wROOK,
+    wQUEEN,
+    wKING,
+    bPAWN,
+    bKNIGHT,
+    bBISHOP,
+    bROOK,
+    bQUEEN,
+    bKING
 };
+
+enum Promotions
+{
+    PROMOTION_NONE,
+    PROMOTION_QUEEN,
+    PROMOTION_ROOK,
+    PROMOTION_BISHOP,
+    PROMOTION_KNIGHT
+};
+
+
+BitBoard empty_board = BitBoard();
+
+BitBoard NOT_A_FILE = BitBoard(0xFEFEFEFEFEFEFEFEull);
+BitBoard NOT_B_FILE = BitBoard(0xFDFDFDFDFDFDFDFDull);
+BitBoard NOT_G_FILE = BitBoard(0xBFBFBFBFBFBFBFBFull);
+BitBoard NOT_H_FILE = BitBoard(0x7F7F7F7F7F7F7F7Full);
+BitBoard NOT_AB_FILE = NOT_A_FILE & NOT_B_FILE;
+BitBoard NOT_GH_FILE = NOT_G_FILE & NOT_H_FILE;

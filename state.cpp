@@ -22,5 +22,6 @@ public:
     void print()
     {
         pos.print();
+        cout << "Current Color: " << (currentColor == 0  ? "White" : "Black") << endl;
     }
 };
