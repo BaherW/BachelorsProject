@@ -118,6 +118,11 @@ public:
         return static_cast<size_t>(board);
     }
 
+    U64 get_board()
+    {
+        return board;
+    }
+
     void print()
     {
         for (int rank = 0; rank < 8; rank++)

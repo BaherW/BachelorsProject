@@ -1,7 +1,10 @@
 #include "../globals.h"
 #include "bishop.cpp"
 #include "rook.cpp"
-#include <vector>
+#include "magics.cpp"
+
+BitBoard BISHOP_MASKS[BOARD_SIZE];
+BitBoard ROOK_MASKS[BOARD_SIZE];
 
 int RELEVANT_OCCUPANCY_BISHOP[BOARD_SIZE];
 int RELEVANT_OCCUPANCY_ROOK[BOARD_SIZE];
@@ -43,19 +46,6 @@ BitBoard get_occupancy_bitboard(int index, int attack_mask_bits, BitBoard attack
     return occupancy;
 }
 
-void init_relevant_occupancy()
-{
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            int square = i * 8 + j;
-            RELEVANT_OCCUPANCY_BISHOP[square] = bishop_attacks_mask(square).pop_count();
-            RELEVANT_OCCUPANCY_ROOK[square] = rook_attacks_mask(square).pop_count();
-        }
-    }
-}
-
 BitBoard find_magic_number(int square, int relevant_bits, int bishop)
 {
     BitBoard occupancies[4096];
@@ -63,7 +53,7 @@ BitBoard find_magic_number(int square, int relevant_bits, int bishop)
     BitBoard used_atacks[4096];
 
     bishop = bishop == 2;
-    BitBoard attack_mask = bishop ? bishop_attacks_mask(square) : rook_attacks_mask(square);
+    BitBoard attack_mask = bishop ? BISHOP_MASKS[square] : ROOK_MASKS[square];
     int mask_pop = bishop ? RELEVANT_OCCUPANCY_BISHOP[square] : RELEVANT_OCCUPANCY_ROOK[square];
 
     int i, j, k, fail;
@@ -102,52 +92,63 @@ void init_magic_numbers()
 {
     for (int square = 0; square < BOARD_SIZE; square++)
     {
-        BISHOP_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_BISHOP[square], BISHOP);
-        ROOK_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_ROOK[square], ROOK);
+        BISHOP_MASKS[square] = bishop_attacks_mask(square);
+        ROOK_MASKS[square] = rook_attacks_mask(square);
+
+        RELEVANT_OCCUPANCY_BISHOP[square] = BISHOP_MASKS[square].pop_count();
+        RELEVANT_OCCUPANCY_ROOK[square] = ROOK_MASKS[square].pop_count();
+
+        //BISHOP_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_BISHOP[square], BISHOP);
+        //ROOK_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_ROOK[square], ROOK);
+
+        BISHOP_MAGICS[square] = BISHOP_SAVED_MAGICS[square];
+        ROOK_MAGICS[square] = ROOK_SAVED_MAGICS[square];
     }
+    
 }
 
-void init_attacks(int bishop)
+void init_attacks()
 {
     for (int square = 0; square < BOARD_SIZE; square++)
     {
-        cout << " SQUARE " << square << endl;
-        BitBoard attack_mask = bishop ? bishop_attacks_mask(square) : rook_attacks_mask(square);
+        int bishop_bits = BISHOP_MASKS[square].pop_count();
+        int rook_bits = ROOK_MASKS[square].pop_count();
 
-        int relevant_bit_count = attack_mask.pop_count();
-
-        int indicies = 1 << relevant_bit_count;
-
-        for (int i = 0; i < indicies; i++)
+        for (int i = 0; i < (1 << bishop_bits); i++)
         {
-            cout << indicies - i << " ";
-            if (bishop)
-            {
-                BitBoard occupancy = get_occupancy_bitboard(i, relevant_bit_count, attack_mask);
-                int magic_index = (occupancy * BISHOP_MAGICS[square]) >> (64 - RELEVANT_OCCUPANCY_BISHOP[square]);
-                BISHOP_ATTACKS[square][magic_index] = bishop_attacks_mask(square, occupancy);
-            }
+            BitBoard occupancy = get_occupancy_bitboard(i, bishop_bits, BISHOP_MASKS[square]);
+            int magic_index = (occupancy * BISHOP_MAGICS[square]) >> (64 - RELEVANT_OCCUPANCY_BISHOP[square]);
+            BISHOP_ATTACKS[square][magic_index] = bishop_attacks_mask(square, occupancy);
+        }
+        for (int i = 0; i < (1 << rook_bits); i++)
+        {
+            BitBoard occupancy = get_occupancy_bitboard(i, rook_bits, ROOK_MASKS[square]);
+            int magic_index = (occupancy * ROOK_MAGICS[square]) >> (64 - RELEVANT_OCCUPANCY_ROOK[square]);
+            ROOK_ATTACKS[square][magic_index] = rook_attacks_mask(square, occupancy);
         }
     }
 }
 
 void init_magic_attacks()
 {
-    init_relevant_occupancy();
-    cout << "found relevant occupancy" << endl;
     init_magic_numbers();
-    cout << "found magics" << endl;
-    init_attacks(1);
-    cout << "initialized attacks" << endl;
+    init_attacks();
 }
 
 BitBoard get_bishop_attacks(int square, BitBoard occupancy)
 {
-    // get bishop attacks assuming current board occupancy
-    occupancy &= bishop_attacks_mask(square);
+    occupancy &= BISHOP_MASKS[square];
     occupancy *= BISHOP_MAGICS[square];
     occupancy >>= 64 - RELEVANT_OCCUPANCY_BISHOP[square];
-    
-    // return bishop attacks
+
     return BISHOP_ATTACKS[square][occupancy];
+}
+
+BitBoard get_rook_attacks(int square, BitBoard occupancy)
+{
+    occupancy &= ROOK_MASKS[square];
+    occupancy *= ROOK_MAGICS[square];
+    occupancy >>= 64 - RELEVANT_OCCUPANCY_ROOK[square];
+
+    return ROOK_ATTACKS[square][occupancy];
 }
