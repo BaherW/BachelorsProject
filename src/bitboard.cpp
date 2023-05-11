@@ -31,6 +31,26 @@ public:
         return board & (1ULL << n) ? 1 : 0;
     }
 
+    // Brian Kerninghan's way
+    int pop_count()
+    {
+        U64 temp_board = board;
+        int count = 0;
+        while (temp_board)
+        {
+            count++;
+            temp_board &= temp_board - 1; // reset LS1B
+        }
+        return count;
+    }
+
+    int get_ls1b_index()
+    {
+        if (board)
+            return BitBoard((board & -board) - 1).pop_count();
+        return -1;
+    }
+
     BitBoard operator&(const BitBoard &rhs)
     {
         return BitBoard(board & rhs.board);
@@ -61,12 +81,28 @@ public:
         return BitBoard(board >> n);
     }
 
+    BitBoard &operator>>=(int n)
+    {
+        board >>= n;
+        return *this;
+    }
+
     BitBoard operator<<(int n) const
     {
         return BitBoard(board << n);
     }
 
-    
+    BitBoard operator*(BitBoard &rhs) const
+    {
+        return BitBoard(board * rhs);
+    }
+
+    BitBoard &operator*=(const BitBoard &rhs)
+    {
+        board *= rhs.board;
+        return *this;
+    }
+
     bool operator==(const BitBoard &rhs)
     {
         return board == rhs.board;
@@ -75,6 +111,11 @@ public:
     bool operator!=(const BitBoard &rhs)
     {
         return board != rhs.board;
+    }
+
+    operator size_t() const
+    {
+        return static_cast<size_t>(board);
     }
 
     void print()

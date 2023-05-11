@@ -3,8 +3,8 @@
 class Position
 {
 public:
-    vector<BitBoard> pieces;
-    vector<BitBoard> sides;
+    BitBoard pieces[12];
+    BitBoard sides[3];
 
     Position()
     {
@@ -90,10 +90,10 @@ public:
 private:
     void initBoards()
     {
-        for (int color = 0; color < 12; color++)
+        for (int piece = 0; piece < 12; piece++)
         {
             BitBoard emptyBoard;
-            pieces.push_back(emptyBoard);
+            pieces[piece] = emptyBoard;
         }
     }
     void readFen(string fen)
@@ -167,9 +167,9 @@ private:
                          pieces[bKING];
         BitBoard both = white | black;
 
-        sides.push_back(white);
-        sides.push_back(black);
-        sides.push_back(both);
+        sides[0] = white;
+        sides[1] = black;
+        sides[2] = both;
     }
 
     void setPosition(string fen)
