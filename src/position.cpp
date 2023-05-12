@@ -1,4 +1,6 @@
 #include "globals.h"
+#include "attacks/normal_attacks.cpp"
+#include "attacks/magic_attacks.cpp"
 
 class Position
 {
@@ -14,6 +16,11 @@ public:
     Position(string fen)
     {
         setPosition(fen);
+    }
+
+    bool is_square_attacked(int square, int color)
+    {
+        return color ? is_black_attacked(square) : is_white_attacked(square);
     }
 
     void print()
@@ -85,6 +92,34 @@ public:
             }
             cout << endl;
         }
+    }
+
+    void print_attacked_squares(int color)
+    {
+        printf("\n");
+        // loop over board ranks
+        for (int rank = 0; rank < 8; rank++)
+        {
+            // loop over board files
+            for (int file = 0; file < 8; file++)
+            {
+                // init square
+                int square = rank * 8 + file;
+
+                // print ranks
+                if (!file)
+                    printf("  %d ", 8 - rank);
+
+                // check whether current square is attacked or not
+                printf(" %d", is_square_attacked(square, color) ? 1 : 0);
+            }
+
+            // print new line every rank
+            printf("\n");
+        }
+
+        // print files
+        printf("\n     a b c d e f g h\n\n");
     }
 
 private:
@@ -177,5 +212,41 @@ private:
         initBoards();
         readFen(fen);
         combineBoards();
+    }
+
+    bool is_white_attacked(int square)
+    {
+        if ((PAWN_ATTACKS[BLACK][square] & pieces[wPAWN]) != empty_board)
+            return true;
+        if ((KNIGHT_ATTACKS[square] & pieces[wKNIGHT]) != empty_board)
+            return true;
+        if ((get_bishop_attacks(square, sides[BOTH]) & pieces[wBISHOP]) != empty_board)
+            return true;
+        if ((get_rook_attacks(square, sides[BOTH]) & pieces[wROOK]) != empty_board)
+            return true;
+        if ((get_queen_attacks(square, sides[BOTH]) & pieces[wQUEEN]) != empty_board)
+            return true;
+        if ((KING_ATTACKS[square] & pieces[wKING]) != empty_board)
+            return true;
+
+        return false;
+    }
+
+    bool is_black_attacked(int square)
+    {
+        if ((PAWN_ATTACKS[WHITE][square] & pieces[bPAWN]) != empty_board)
+            return true;
+        if ((KNIGHT_ATTACKS[square] & pieces[bKNIGHT]) != empty_board)
+            return true;
+        if ((get_bishop_attacks(square, sides[BOTH]) & pieces[bBISHOP]) != empty_board)
+            return true;
+        if ((get_rook_attacks(square, sides[BOTH]) & pieces[bROOK]) != empty_board)
+            return true;
+        if ((get_queen_attacks(square, sides[BOTH]) & pieces[bQUEEN]) != empty_board)
+            return true;
+        if ((KING_ATTACKS[square] & pieces[bKING]) != empty_board)
+            return true;
+
+        return false;
     }
 };

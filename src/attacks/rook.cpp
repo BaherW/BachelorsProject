@@ -1,13 +1,13 @@
 #include "../globals.h"
 
-BitBoard rook_attacks_mask(int square, BitBoard blockers = empty_board)
+BitBoard rook_attacks_mask(int square, BitBoard blockers = empty_board, int edges = 0)
 {
     BitBoard attacks = BitBoard();
     BitBoard mask;
     int row, file;
     int max, min;
 
-    if (blockers == empty_board)
+    if (edges == 0)
         max = 6, min = 1;
     else
         max = 7, min = 0;

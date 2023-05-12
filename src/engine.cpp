@@ -12,11 +12,7 @@ void init_all()
 int main()
 {
     init_all();
-    State state = State("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    State state = State();
     state.print();
-    BitBoard occupancy_board = empty_board;
-    occupancy_board.set_bit(b4);
-    occupancy_board.set_bit(e2);
-    occupancy_board.set_bit(f4);
-    get_rook_attacks(e4, occupancy_board).print();
+    state.position.print_attacked_squares(WHITE);
 }
