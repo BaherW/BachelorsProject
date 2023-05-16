@@ -67,21 +67,21 @@ public:
 
     void print()
     {
-        cout << setw(10) << "Source"
-             << setw(10) << "Target"
-             << setw(10) << "Piece"
-             << setw(18) << "Promoted Piece"
-             << setw(14) << "Capture Flag"
-             << setw(20) << "Double Push Flag"
-             << setw(15) << "Enpassant Flag"
-             << setw(15) << "Castling Flag" << endl;
-        cout << setw(10) << get_source()
-             << setw(10) << get_target()
-             << setw(10) << get_piece()
-             << setw(18) << get_promoted_piece()
-             << setw(14) << is_capture()
-             << setw(20) << is_double_push()
-             << setw(15) << is_enpassant()
-             << setw(15) << is_castling() << endl;
+        cout << "Source"
+             << "      " << "Target"
+             << "      " << "Piece"
+             << "      " << "Promoted"
+             << "      " << "Capture"
+             << "      " << "Double"
+             << "      " << "Enpassant"
+             << "      " << "Castling" << endl;
+        cout << SQUARE_TO_STRING[get_source()]
+             << "          " << SQUARE_TO_STRING[get_target()]
+             << "          " << PIECE_UNICODE[get_piece()]
+             << "          " << get_promoted_piece()
+             << "             " << is_capture()
+             << "            " << is_double_push()
+             << "           " << is_enpassant()
+             << "              " << is_castling() << endl;
     }
 };

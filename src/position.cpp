@@ -40,58 +40,17 @@ public:
                 bool found = false;
                 for (int piece = 0; piece < 12; piece++)
                 {
-
                     if (pieces[piece].get_bit(square))
                     {
                         found = true;
-                        switch (piece)
-                        {
-                        case wPAWN:
-                            cout << " ♟︎";
-                            break;
-                        case wKNIGHT:
-                            cout << " ♞";
-                            break;
-                        case wBISHOP:
-                            cout << " ♝";
-                            break;
-                        case wROOK:
-                            cout << " ♜";
-                            break;
-                        case wQUEEN:
-                            cout << " ♛";
-                            break;
-                        case wKING:
-                            cout << " ♚";
-                            break;
-                        case bPAWN:
-                            cout << " ♙";
-                            break;
-                        case bKNIGHT:
-                            cout << " ♘";
-                            break;
-                        case bBISHOP:
-                            cout << " ♗";
-                            break;
-                        case bROOK:
-                            cout << " ♖";
-                            break;
-                        case bQUEEN:
-                            cout << " ♕";
-                            break;
-                        case bKING:
-                            cout << " ♔";
-                            break;
-                        default:
+                        if (piece <= 11)
+                            cout << " " << PIECE_UNICODE[piece];
+                        else
                             cout << " .";
-                            break;
-                        }
                     }
                 }
                 if (!found)
-                {
                     cout << " .";
-                }
             }
             cout << endl;
         }
@@ -99,26 +58,20 @@ public:
 
     void print_attacked_squares(int color)
     {
-        printf("\n");
-        // loop over board ranks
+        cout << endl;
         for (int rank = 0; rank < 8; rank++)
         {
-            // loop over board files
             for (int file = 0; file < 8; file++)
             {
-                // init square
                 int square = rank * 8 + file;
 
-                // print ranks
                 if (!file)
                     printf("  %d ", 8 - rank);
 
-                // check whether current square is attacked or not
                 printf(" %d", is_square_attacked(square, color) ? 1 : 0);
             }
 
-            // print new line every rank
-            printf("\n");
+            cout << endl;
         }
 
         // print files

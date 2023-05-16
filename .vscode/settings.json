@@ -6,6 +6,8 @@
         "fstream": "cpp",
         "vector": "cpp",
         "string": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "iomanip": "cpp",
+        "type_traits": "cpp"
     }
 }

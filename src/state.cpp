@@ -27,7 +27,7 @@ public:
         position = Position(split_fen[0]);
         current_color = split_fen[1] == "w" ? WHITE : BLACK;
         castling = Castling(split_fen[2]);
-        enpassant = split_fen[3] == "-" ? -1 : string_to_square(split_fen[3]);
+        enpassant = split_fen[3] == "-" ? -1 : SQUARE_TO_INDEX(split_fen[3]);
         halfmove = stoi(split_fen[4]);
         fullmove = stoi(split_fen[5]);
     }

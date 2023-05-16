@@ -10,11 +10,11 @@ void init_all()
 int main()
 {
     init_all();
-    State state = State();
+    State state = State("rnbqkbnr/pp2p1pp/5p2/3pP3/1PpP4/2P5/P4PPP/RNBQKBNR b KQkq b3 0 5");
     state.print();
 
-    MoveList movelist = MoveList();
-    generate_pawn_moves(WHITE, movelist, state);
+    MoveList move_list = MoveList();
+    generate_pawn_moves(WHITE, move_list, state);
 
-    movelist.print();
+    move_list.print();
 }

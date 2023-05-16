@@ -23,7 +23,7 @@ public:
     {
         for (int i = 0; i < num_moves; i++)
         {
-            moves[num_moves].print();
+            moves[i].print();
         }
     }
 };

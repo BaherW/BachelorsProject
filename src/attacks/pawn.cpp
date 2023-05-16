@@ -104,11 +104,74 @@ void generate_pawn_moves(int color, MoveList &move_list, State &state)
             // Enpassant capture
             if (state.enpassant != -1)
             {
-                attacks = PAWN_ATTACKS[WHITE][source] & BitBoard(1 << state.enpassant);
-                if (attacks != empty_board)
+                BitBoard enpassant_attacks = PAWN_ATTACKS[WHITE][source] & (BitBoard(1) << state.enpassant);
+                if (enpassant_attacks != empty_board)
                 {
-                    target = attacks.get_ls1b_index();
+                    target = enpassant_attacks.get_ls1b_index();
                     move_list.add_move(Move(source, target, wPAWN, 0, 1, 0, 1, 0));
+                }
+            }
+            board.unset_bit(source);
+        }
+    }
+    else
+    {
+        board = state.position.pieces[bPAWN];
+
+        while (board != empty_board)
+        {
+            source = board.get_ls1b_index();
+            target = source + 8;
+
+            // Moves without capture
+            if (!state.position.sides[BOTH].get_bit(target))
+            {
+                if (source >= a2 && source <= h2)
+                {
+                    // Promotion
+                    move_list.add_move(Move(source, target, bPAWN, bKNIGHT, 0, 0, 0, 0));
+                    move_list.add_move(Move(source, target, bPAWN, bBISHOP, 0, 0, 0, 0));
+                    move_list.add_move(Move(source, target, bPAWN, bROOK, 0, 0, 0, 0));
+                    move_list.add_move(Move(source, target, bPAWN, bQUEEN, 0, 0, 0, 0));
+                }
+                else
+                {
+                    // Single push
+                    move_list.add_move(Move(source, target, bPAWN, 0, 0, 0, 0, 0));
+                    // Double push
+                    if (source >= a7 && source <= h7 && !state.position.sides[BOTH].get_bit(target + 8))
+                        move_list.add_move(Move(source, target + 8, bPAWN, 0, 0, 1, 0, 0));
+                }
+            }
+            // Moves with capture
+            attacks = PAWN_ATTACKS[BLACK][source] & state.position.sides[WHITE];
+            while (attacks != empty_board)
+            {
+                target = attacks.get_ls1b_index();
+
+                if (source >= a2 && source <= h2)
+                {
+                    // Promotion
+                    move_list.add_move(Move(source, target, bPAWN, bKNIGHT, 1, 0, 0, 0));
+                    move_list.add_move(Move(source, target, bPAWN, bBISHOP, 1, 0, 0, 0));
+                    move_list.add_move(Move(source, target, bPAWN, bROOK, 1, 0, 0, 0));
+                    move_list.add_move(Move(source, target, bPAWN, bQUEEN, 1, 0, 0, 0));
+                }
+                else
+                {
+                    // Capture
+                    move_list.add_move(Move(source, target, bPAWN, 0, 1, 0, 0, 0));
+                }
+                attacks.unset_bit(target);
+            }
+            // Enpassant capture
+            if (state.enpassant != -1)
+            {
+                BitBoard enpassant_attacks = PAWN_ATTACKS[BLACK][source] & (BitBoard(1) << state.enpassant);
+                if (enpassant_attacks != empty_board)
+                {
+                    target = enpassant_attacks.get_ls1b_index();
+                    move_list.add_move(Move(source, target, bPAWN, 0, 1, 0, 1, 0));
                 }
             }
             board.unset_bit(source);

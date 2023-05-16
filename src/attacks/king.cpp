@@ -1,7 +1,11 @@
 #pragma once
 #include "../globals.h"
+#include "../movelist.cpp"
+#include "normal_attacks.cpp"
 
 BitBoard KING_ATTACKS[BOARD_SIZE];
+
+#include "../state.cpp"
 
 BitBoard king_attacks_mask(int square)
 {
@@ -42,5 +46,16 @@ void init_king_attacks()
     for (int square = 0; square < BOARD_SIZE; square++)
     {
         KING_ATTACKS[square] = king_attacks_mask(square);
+    }
+}
+
+void generate_king_moves(int color, MoveList &move_list, State state)
+{
+    if (color == WHITE)
+    {
+        if (state.castling.wk_can_castle())
+        {
+            if (!state.position.sides[BOTH].get_bit)
+        }
     }
 }

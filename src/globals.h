@@ -38,10 +38,12 @@ string SQUARE_TO_STRING[BOARD_SIZE] = {
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
 };
 
-int string_to_square(string square) {
+string PIECE_UNICODE[12] = {"♟︎", "♞", "♝", "♜", "♛", "♚", "♙", "♘", "♗", "♖", "♕", "♔"};
+
+int SQUARE_TO_INDEX(string square) {
     int file = square[0] - 'a';
     int rank = square[1] - '1';
-    return rank * 8 + file;
+    return (7 - rank) * 8 + file;
 }
 
 enum color
