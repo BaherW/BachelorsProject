@@ -1,4 +1,7 @@
+#pragma once
 #include "../globals.h"
+
+BitBoard KING_ATTACKS[BOARD_SIZE];
 
 BitBoard king_attacks_mask(int square)
 {
@@ -32,4 +35,12 @@ BitBoard king_attacks_mask(int square)
         attacks |= board << 9;
 
     return attacks;
+}
+
+void init_king_attacks()
+{
+    for (int square = 0; square < BOARD_SIZE; square++)
+    {
+        KING_ATTACKS[square] = king_attacks_mask(square);
+    }
 }

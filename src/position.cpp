@@ -1,6 +1,9 @@
+#pragma once
 #include "globals.h"
-#include "attacks/normal_attacks.cpp"
 #include "attacks/magic_attacks.cpp"
+#include "attacks/pawn.cpp"
+#include "attacks/knight.cpp"
+#include "attacks/king.cpp"
 
 class Position
 {

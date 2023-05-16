@@ -1,5 +1,3 @@
-#include "state.cpp"
-#include "move.cpp"
 #include "attacks/normal_attacks.cpp"
 #include "attacks/magic_attacks.cpp"
 
@@ -14,5 +12,9 @@ int main()
     init_all();
     State state = State();
     state.print();
-    state.position.print_attacked_squares(WHITE);
+
+    MoveList movelist = MoveList();
+    generate_pawn_moves(WHITE, movelist, state);
+
+    movelist.print();
 }

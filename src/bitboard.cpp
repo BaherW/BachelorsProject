@@ -1,4 +1,7 @@
+#pragma once
 #include "globals.h"
+
+// TODO: maybe make is_empty function
 
 class BitBoard
 {

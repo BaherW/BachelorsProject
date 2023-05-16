@@ -1,3 +1,4 @@
+#pragma once
 #include "globals.h"
 #include <iomanip>
 
@@ -7,6 +8,11 @@ private:
     U64 move;
 
 public:
+    Move()
+    {
+        move = 0;
+    }
+
     Move(uint8_t source, uint8_t target, uint8_t piece, uint8_t promoted, bool capture, bool double_push, bool enpassant, bool castling)
     {
         move = ((source) |

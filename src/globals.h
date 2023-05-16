@@ -14,6 +14,7 @@ using namespace std;
 
 
 const int BOARD_SIZE = 64;
+const int MAX_MOVES = 256;
 
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,

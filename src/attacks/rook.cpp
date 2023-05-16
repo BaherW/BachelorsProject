@@ -1,3 +1,4 @@
+#pragma once
 #include "../globals.h"
 
 BitBoard rook_attacks_mask(int square, BitBoard blockers = empty_board, int edges = 0)
