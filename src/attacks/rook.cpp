@@ -1,5 +1,7 @@
 #pragma once
 #include "../globals.h"
+#include "../movelist.cpp"
+#include "../state.cpp"
 
 BitBoard rook_attacks_mask(int square, BitBoard blockers = empty_board, int edges = 0)
 {
@@ -46,4 +48,55 @@ BitBoard rook_attacks_mask(int square, BitBoard blockers = empty_board, int edge
     }
 
     return attacks;
+}
+
+void generate_rook_moves(int color, MoveList &move_list, State &state)
+{
+    BitBoard board, attacks;
+    int source, target;
+
+    if (color == WHITE)
+    {
+        board = state.position.pieces[wROOK];
+
+        while (board != empty_board)
+        {
+            source = board.get_ls1b_index();
+            attacks = get_rook_attacks(source, state.position.sides[BOTH]) & !state.position.sides[WHITE];
+
+            while (attacks != empty_board)
+            {
+                target = attacks.get_ls1b_index();
+
+                if (!state.position.sides[BLACK].get_bit(target))
+                    move_list.add_move(Move(source, target, wROOK, 0, 0, 0, 0, 0));
+                else
+                    move_list.add_move(Move(source, target, wROOK, 0, 1, 0, 0, 0));
+                attacks.unset_bit(target);
+            }
+            board.unset_bit(source);
+        }
+    }
+    else
+    {
+        board = state.position.pieces[bROOK];
+
+        while (board != empty_board)
+        {
+            source = board.get_ls1b_index();
+            attacks = get_rook_attacks(source, state.position.sides[BOTH]) & !state.position.sides[BLACK];
+
+            while (attacks != empty_board)
+            {
+                target = attacks.get_ls1b_index();
+
+                if (!state.position.sides[WHITE].get_bit(target))
+                    move_list.add_move(Move(source, target, bROOK, 0, 0, 0, 0, 0));
+                else
+                    move_list.add_move(Move(source, target, bROOK, 0, 1, 0, 0, 0));
+                attacks.unset_bit(target);
+            }
+            board.unset_bit(source);
+        }
+    }
 }

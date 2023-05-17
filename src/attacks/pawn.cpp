@@ -1,10 +1,6 @@
 #pragma once
 #include "../globals.h"
 #include "../movelist.cpp"
-#include "normal_attacks.cpp"
-
-BitBoard PAWN_ATTACKS[2][BOARD_SIZE];
-
 #include "../state.cpp"
 
 BitBoard pawn_attacks_mask(int square, int color)

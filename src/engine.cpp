@@ -1,5 +1,6 @@
 #include "attacks/normal_attacks.cpp"
 #include "attacks/magic_attacks.cpp"
+#include "attacks/queen.cpp"
 
 void init_all()
 {
@@ -10,11 +11,11 @@ void init_all()
 int main()
 {
     init_all();
-    State state = State("rnbqkbnr/pp2p1pp/5p2/3pP3/1PpP4/2P5/P4PPP/RNBQKBNR b KQkq b3 0 5");
+    State state = State("8/8/8/2ppp3/2pQp3/2ppp3/8/8 w - - 0 1");
     state.print();
 
     MoveList move_list = MoveList();
-    generate_pawn_moves(WHITE, move_list, state);
+    generate_queen_moves(WHITE, move_list, state);
 
     move_list.print();
 }

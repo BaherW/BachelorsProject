@@ -1,6 +1,7 @@
 #pragma once
 #include "../globals.h"
-
+#include "../movelist.cpp"
+#include "../state.cpp"
 
 BitBoard bishop_attacks_mask(int square, BitBoard blockers = empty_board, int edges = 0)
 {
@@ -62,4 +63,55 @@ BitBoard bishop_attacks_mask(int square, BitBoard blockers = empty_board, int ed
     }
 
     return attacks;
+}
+
+void generate_bishop_moves(int color, MoveList &move_list, State &state)
+{
+    BitBoard board, attacks;
+    int source, target;
+
+    if (color == WHITE)
+    {
+        board = state.position.pieces[wBISHOP];
+
+        while (board != empty_board)
+        {
+            source = board.get_ls1b_index();
+            attacks = get_bishop_attacks(source, state.position.sides[BOTH]) & !state.position.sides[WHITE];
+
+            while (attacks != empty_board)
+            {
+                target = attacks.get_ls1b_index();
+
+                if (!state.position.sides[BLACK].get_bit(target))
+                    move_list.add_move(Move(source, target, wBISHOP, 0, 0, 0, 0, 0));
+                else
+                    move_list.add_move(Move(source, target, wBISHOP, 0, 1, 0, 0, 0));
+                attacks.unset_bit(target);
+            }
+            board.unset_bit(source);
+        }
+    }
+    else
+    {
+        board = state.position.pieces[bBISHOP];
+
+        while (board != empty_board)
+        {
+            source = board.get_ls1b_index();
+            attacks = get_bishop_attacks(source, state.position.sides[BOTH]) & !state.position.sides[BLACK];
+
+            while (attacks != empty_board)
+            {
+                target = attacks.get_ls1b_index();
+
+                if (!state.position.sides[WHITE].get_bit(target))
+                    move_list.add_move(Move(source, target, bBISHOP, 0, 0, 0, 0, 0));
+                else
+                    move_list.add_move(Move(source, target, bBISHOP, 0, 1, 0, 0, 0));
+                attacks.unset_bit(target);
+            }
+            board.unset_bit(source);
+        }
+    }
 }

@@ -12,7 +12,6 @@ using namespace std;
 
 #include "bitboard.cpp"
 
-
 const int BOARD_SIZE = 64;
 const int MAX_MOVES = 256;
 
@@ -96,3 +95,10 @@ const BitBoard NOT_G_FILE = BitBoard(0xBFBFBFBFBFBFBFBFull);
 const BitBoard NOT_H_FILE = BitBoard(0x7F7F7F7F7F7F7F7Full);
 const BitBoard NOT_AB_FILE = NOT_A_FILE & NOT_B_FILE;
 const BitBoard NOT_GH_FILE = NOT_G_FILE & NOT_H_FILE;
+
+BitBoard PAWN_ATTACKS[2][BOARD_SIZE];
+BitBoard KNIGHT_ATTACKS[BOARD_SIZE];
+BitBoard KING_ATTACKS[BOARD_SIZE];
+BitBoard get_bishop_attacks(int square, BitBoard occupancy);
+BitBoard get_rook_attacks(int square, BitBoard occupancy);
+BitBoard get_queen_attacks(int square, BitBoard occupancy);

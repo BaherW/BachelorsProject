@@ -1,8 +1,8 @@
 #pragma once
 #include "../globals.h"
+#include "magics.cpp"
 #include "bishop.cpp"
 #include "rook.cpp"
-#include "magics.cpp"
 
 BitBoard BISHOP_MASKS[BOARD_SIZE];
 BitBoard ROOK_MASKS[BOARD_SIZE];
@@ -98,7 +98,9 @@ void init_magic_numbers()
         RELEVANT_OCCUPANCY_BISHOP[square] = BISHOP_MASKS[square].pop_count();
         RELEVANT_OCCUPANCY_ROOK[square] = ROOK_MASKS[square].pop_count();
 
-       //BISHOP_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_BISHOP[square], BISHOP);
+        //TODO: store on disk
+
+        //BISHOP_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_BISHOP[square], BISHOP);
         //ROOK_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_ROOK[square], ROOK);
 
         BISHOP_MAGICS[square] = BISHOP_SAVED_MAGICS[square];

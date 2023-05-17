@@ -1,9 +1,5 @@
 #pragma once
 #include "globals.h"
-#include "attacks/magic_attacks.cpp"
-#include "attacks/pawn.cpp"
-#include "attacks/knight.cpp"
-#include "attacks/king.cpp"
 
 class Position
 {
@@ -54,6 +50,7 @@ public:
             }
             cout << endl;
         }
+        printf("\n   a b c d e f g h\n\n");
     }
 
     void print_attacked_squares(int color)
