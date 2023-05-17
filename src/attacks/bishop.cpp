@@ -73,7 +73,6 @@ void generate_bishop_moves(int color, MoveList &move_list, State &state)
     if (color == WHITE)
     {
         board = state.position.pieces[wBISHOP];
-
         while (board != empty_board)
         {
             source = board.get_ls1b_index();

@@ -46,24 +46,29 @@ public:
         }
     }
 
+    void update_castle_right(int source, int target)
+    {
+        castle_rights &= CASTLING_RIGHTS[source] & CASTLING_RIGHTS[target];
+    }
+
     bool wk_can_castle()
     {
-        return castle_rights & 0b00000001 != 0;
+        return castle_rights & 0b00000001;
     }
 
     bool wq_can_castle()
     {
-        return castle_rights & 0b00000010 != 0;
+        return castle_rights & 0b00000010;
     }
 
     bool bk_can_castle()
     {
-        return castle_rights & 0b00000100 != 0;
+        return castle_rights & 0b00000100;
     }
 
     bool bq_can_castle()
     {
-        return castle_rights & 0b00001000 != 0;
+        return castle_rights & 0b00001000;
     }
 
     void disable_wk_castle()

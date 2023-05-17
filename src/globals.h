@@ -37,6 +37,17 @@ string SQUARE_TO_STRING[BOARD_SIZE] = {
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
 };
 
+u_int8_t CASTLING_RIGHTS[BOARD_SIZE] = {
+    7, 15, 15, 15,  3, 15, 15, 11,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   13, 15, 15, 15, 12, 15, 15, 14
+};
+
 string PIECE_UNICODE[12] = {"♟︎", "♞", "♝", "♜", "♛", "♚", "♙", "♘", "♗", "♖", "♕", "♔"};
 
 int SQUARE_TO_INDEX(string square) {
@@ -78,14 +89,6 @@ enum piece
     bKING
 };
 
-enum Promotions
-{
-    PROMOTION_NONE,
-    PROMOTION_QUEEN,
-    PROMOTION_ROOK,
-    PROMOTION_BISHOP,
-    PROMOTION_KNIGHT
-};
 
 const BitBoard empty_board = BitBoard();
 

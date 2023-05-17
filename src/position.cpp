@@ -9,12 +9,12 @@ public:
 
     Position()
     {
-        setPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        set_position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
     }
 
     Position(string fen)
     {
-        setPosition(fen);
+        set_position(fen);
     }
 
     bool is_square_attacked(int square, int color)
@@ -75,8 +75,29 @@ public:
         printf("\n     a b c d e f g h\n\n");
     }
 
+    void combine_boards()
+    {
+        BitBoard white = pieces[wPAWN] |
+                         pieces[wKNIGHT] |
+                         pieces[wBISHOP] |
+                         pieces[wROOK] |
+                         pieces[wQUEEN] |
+                         pieces[wKING];
+        BitBoard black = pieces[bPAWN] |
+                         pieces[bKNIGHT] |
+                         pieces[bBISHOP] |
+                         pieces[bROOK] |
+                         pieces[bQUEEN] |
+                         pieces[bKING];
+        BitBoard both = white | black;
+
+        sides[0] = white;
+        sides[1] = black;
+        sides[2] = both;
+    }
+
 private:
-    void initBoards()
+    void init_boards()
     {
         for (int piece = 0; piece < 12; piece++)
         {
@@ -84,7 +105,7 @@ private:
             pieces[piece] = emptyBoard;
         }
     }
-    void readFen(string fen)
+    void read_fen(string fen)
     {
         int square = 0;
         for (int i = 0; i < fen.length(); i++)
@@ -139,32 +160,12 @@ private:
             square += skippedSquares;
         }
     }
-    void combineBoards()
-    {
-        BitBoard white = pieces[wPAWN] |
-                         pieces[wKNIGHT] |
-                         pieces[wBISHOP] |
-                         pieces[wROOK] |
-                         pieces[wQUEEN] |
-                         pieces[wKING];
-        BitBoard black = pieces[bPAWN] |
-                         pieces[bKNIGHT] |
-                         pieces[bBISHOP] |
-                         pieces[bROOK] |
-                         pieces[bQUEEN] |
-                         pieces[bKING];
-        BitBoard both = white | black;
 
-        sides[0] = white;
-        sides[1] = black;
-        sides[2] = both;
-    }
-
-    void setPosition(string fen)
+    void set_position(string fen)
     {
-        initBoards();
-        readFen(fen);
-        combineBoards();
+        init_boards();
+        read_fen(fen);
+        combine_boards();
     }
 
     bool is_white_attacked(int square)

@@ -1,6 +1,6 @@
 #include "attacks/normal_attacks.cpp"
 #include "attacks/magic_attacks.cpp"
-#include "attacks/queen.cpp"
+#include "perft.cpp"
 
 void init_all()
 {
@@ -11,11 +11,11 @@ void init_all()
 int main()
 {
     init_all();
-    State state = State("8/8/8/2ppp3/2pQp3/2ppp3/8/8 w - - 0 1");
+    State state = State("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
     state.print();
 
-    MoveList move_list = MoveList();
-    generate_queen_moves(WHITE, move_list, state);
-
-    move_list.print();
+    cout << perft2(3, state).nodes << endl;
+    cout << perft2(3, state).captures << endl;
+    cout << perft2(3, state).enp << endl;
+    cout << perft2(3, state).castles << endl;
 }

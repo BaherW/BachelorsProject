@@ -98,7 +98,7 @@ void generate_pawn_moves(int color, MoveList &move_list, State &state)
                 attacks.unset_bit(target);
             }
             // Enpassant capture
-            if (state.enpassant != -1)
+            if (state.enpassant != 0)
             {
                 BitBoard enpassant_attacks = PAWN_ATTACKS[WHITE][source] & (BitBoard(1) << state.enpassant);
                 if (enpassant_attacks != empty_board)
@@ -161,7 +161,7 @@ void generate_pawn_moves(int color, MoveList &move_list, State &state)
                 attacks.unset_bit(target);
             }
             // Enpassant capture
-            if (state.enpassant != -1)
+            if (state.enpassant != 0)
             {
                 BitBoard enpassant_attacks = PAWN_ATTACKS[BLACK][source] & (BitBoard(1) << state.enpassant);
                 if (enpassant_attacks != empty_board)
