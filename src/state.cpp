@@ -42,6 +42,32 @@ public:
         position.pieces[piece].unset_bit(source);
         position.pieces[piece].set_bit(target);
 
+        if (move.is_capture())
+        {
+            if (current_color == WHITE)
+            {
+                for (int i = bPAWN; i < bKING; i++)
+                {
+                    if (position.pieces[i].get_bit(target))
+                    {
+                        position.pieces[i].unset_bit(target);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = wPAWN; i < wKING; i++)
+                {
+                    if (position.pieces[i].get_bit(target))
+                    {
+                        position.pieces[i].unset_bit(target);
+                        break;
+                    }
+                }
+            }
+        }
+
         if (move.is_double_push())
         {
             if (current_color == WHITE)
@@ -98,7 +124,8 @@ public:
 
         current_color = !current_color;
 
-        int king_location = position.pieces[current_color ? bKING : wKING].get_ls1b_index();
+        int king_location = position.pieces[current_color ? wKING : bKING].get_ls1b_index();
+        //cout << position.is_square_attacked(king_location, current_color);
         if (position.is_square_attacked(king_location, current_color))
             return false;
 
