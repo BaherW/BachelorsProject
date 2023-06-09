@@ -13,6 +13,6 @@ public:
     void search(int depth, State state);
 
 private:
-    int nega_max(int depth, State& state, int alpha, int beta);
+    int alpha_beta(int depth, State& state, int alpha, int beta);
     int quiescent(State& state, int alpha, int beta);
 };

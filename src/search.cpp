@@ -10,10 +10,10 @@ void Searcher::search(int depth, State state)
     int val;
 
     for (int i = 1; i <= depth; i++)
-        val = nega_max(i, state, -INFINITY, INFINITY);
+        val = alpha_beta(i, state, -INFINITY, INFINITY);
 }
 
-int Searcher::nega_max(int depth, State &state, int alpha, int beta)
+int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
 {
     int val;
     int hash_flag = hashfALPHA;
@@ -46,7 +46,7 @@ int Searcher::nega_max(int depth, State &state, int alpha, int beta)
         state.current_color = !state.current_color;
         state.zobrist_hash ^= current_color_key;
 
-        val = -nega_max(depth - 3, state, -beta, -beta + 1);
+        val = -alpha_beta(depth - 3, state, -beta, -beta + 1);
 
         ply--;
         state = old_state;
@@ -77,12 +77,12 @@ int Searcher::nega_max(int depth, State &state, int alpha, int beta)
         // PV Search
         if (foundPV)
         {
-            val = -nega_max(depth - 1, state, -alpha - 1, -alpha);
+            val = -alpha_beta(depth - 1, state, -alpha - 1, -alpha);
             if (val > alpha && val < beta)
-                val = -nega_max(depth - 1, state, -beta, -alpha);
+                val = -alpha_beta(depth - 1, state, -beta, -alpha);
         }
         else
-            val = -nega_max(depth - 1, state, -beta, -alpha);
+            val = -alpha_beta(depth - 1, state, -beta, -alpha);
 
         ply--;
         state = old_state;
