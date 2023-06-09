@@ -1,8 +1,8 @@
 #include <chrono>
-#include "globals.h"
-#include "movegen.cpp"
-#include "movelist.cpp"
-#include "state.cpp"
+#include "../headers/globals.h"
+#include "../headers/movegen.h"
+#include "../headers/movelist.h"
+#include "../headers/state.h"
 
 U64 perft(int depth, State &state)
 {
@@ -18,10 +18,10 @@ U64 perft(int depth, State &state)
 
     for (i = 0; i < n_moves; i++)
     {
-        State oldState = state;
+        State old_state = state;
         if (state.play_move(move_list.moves[i]))
             nodes += perft(depth - 1, state);
-        state = oldState;
+        state = old_state;
     }
     return nodes;
 }

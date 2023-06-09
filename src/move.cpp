@@ -1,86 +1,90 @@
-#pragma once
-#include "globals.h"
+#include "../headers/move.h"
 
-class Move
+Move::Move()
 {
-private:
-    U64 move;
+    move = 0;
+}
 
-public:
-    Move()
-    {
-        move = 0;
-    }
+Move::Move(const uint8_t &source, const uint8_t &target, const uint8_t &piece, const uint8_t &promoted, const bool &capture, const bool &double_push, const bool &enpassant, const bool &castling)
+{
+    move = ((source) |
+            (target << 6) |
+            (piece << 12) |
+            (promoted << 16) |
+            (capture << 20) |
+            (double_push << 21) |
+            (enpassant << 22) |
+            (castling << 23));
+}
 
-    Move(uint8_t source, uint8_t target, uint8_t piece, uint8_t promoted, bool capture, bool double_push, bool enpassant, bool castling)
-    {
-        move = ((source) |
-                (target << 6) |
-                (piece << 12) |
-                (promoted << 16) |
-                (capture << 20) |
-                (double_push << 21) |
-                (enpassant << 22) |
-                (castling << 23));
-    }
+uint64_t Move::get_source() const
+{
+    return (move & 0x3F);
+}
 
-    uint64_t get_source() const
-    {
-        return (move & 0x3F);
-    }
+uint64_t Move::get_target() const
+{
+    return (move & 0xfc0) >> 6;
+}
 
-    uint64_t get_target() const
-    {
-        return (move & 0xfc0) >> 6;
-    }
+uint64_t Move::get_piece() const
+{
+    return (move & 0xf000) >> 12;
+}
 
-    uint64_t get_piece() const
-    {
-        return (move & 0xf000) >> 12;
-    }
+uint64_t Move::get_promoted_piece() const
+{
+    return (move & 0xf0000) >> 16;
+}
 
-    uint64_t get_promoted_piece() const
-    {
-        return (move & 0xf0000) >> 16;
-    }
+bool Move::is_capture() const
+{
+    return move & 0x100000;
+}
 
-    bool is_capture() const
-    {
-        return move & 0x100000;
-    }
+bool Move::is_double_push() const
+{
+    return move & 0x200000;
+}
 
-    bool is_double_push() const
-    {
-        return move & 0x200000;
-    }
+bool Move::is_enpassant() const
+{
+    return move & 0x400000;
+}
 
-    bool is_enpassant() const
-    {
-        return move & 0x400000;
-    }
+bool Move::is_castle() const
+{
+    return move & 0x800000;
+}
 
-    bool is_castling() const
-    {
-        return move & 0x800000;
-    }
+int Move::get_value() const
+{
+    return move;
+}
 
-    void print()
-    {
-        cout << "Source"
-             << "      " << "Target"
-             << "      " << "Piece"
-             << "      " << "Promoted"
-             << "      " << "Capture"
-             << "      " << "Double"
-             << "      " << "Enpassant"
-             << "      " << "Castling" << endl;
-        cout << SQUARE_TO_STRING[get_source()]
-             << "          " << SQUARE_TO_STRING[get_target()]
-             << "          " << PIECE_UNICODE[get_piece()]
-             << "          " << get_promoted_piece()
-             << "             " << is_capture()
-             << "            " << is_double_push()
-             << "           " << is_enpassant()
-             << "              " << is_castling() << endl;
-    }
-};
+void Move::print()
+{
+    cout << "Source"
+         << "      "
+         << "Target"
+         << "      "
+         << "Piece"
+         << "      "
+         << "Promoted"
+         << "      "
+         << "Capture"
+         << "      "
+         << "Double"
+         << "      "
+         << "Enpassant"
+         << "      "
+         << "Castling" << endl;
+    cout << SQUARE_TO_STRING[get_source()]
+         << "          " << SQUARE_TO_STRING[get_target()]
+         << "          " << PIECE_UNICODE[get_piece()]
+         << "          " << get_promoted_piece()
+         << "             " << is_capture()
+         << "            " << is_double_push()
+         << "           " << is_enpassant()
+         << "              " << is_castle() << endl;
+}

@@ -1,13 +1,4 @@
-#pragma once
-#include "globals.h"
-#include "movelist.cpp"
-#include "state.cpp"
-#include "attacks/pawn.cpp"
-#include "attacks/knight.cpp"
-#include "attacks/bishop.cpp"
-#include "attacks/rook.cpp"
-#include "attacks/queen.cpp"
-#include "attacks/king.cpp"
+#include "../headers/movegen.h"
 
 void generate_moves(MoveList &move_list, State &state)
 {

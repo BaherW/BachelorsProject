@@ -1,206 +1,194 @@
-#pragma once
-#include "globals.h"
+#include "../headers/position.h"
+#include "../headers/attacks.h"
 
-class Position
+Position::Position()
 {
-public:
-    BitBoard pieces[12];
-    BitBoard sides[3];
+    set_position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+}
 
-    Position()
-    {
-        set_position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-    }
+Position::Position(string fen)
+{
+    set_position(fen);
+}
 
-    Position(string fen)
-    {
-        set_position(fen);
-    }
+void Position::combine_boards()
+{
+    BitBoard white = pieces[wPAWN] |
+                     pieces[wKNIGHT] |
+                     pieces[wBISHOP] |
+                     pieces[wROOK] |
+                     pieces[wQUEEN] |
+                     pieces[wKING];
+    BitBoard black = pieces[bPAWN] |
+                     pieces[bKNIGHT] |
+                     pieces[bBISHOP] |
+                     pieces[bROOK] |
+                     pieces[bQUEEN] |
+                     pieces[bKING];
 
-    bool is_square_attacked(int square, int color)
-    {
-        return color ? is_black_attacked(square) : is_white_attacked(square);
-    }
+    sides[0] = white;
+    sides[1] = black;
+    sides[2] = white | black;
+}
 
-    void print()
+bool Position::is_square_attacked(int square, int color)
+{
+    return color ? is_black_attacked(square) : is_white_attacked(square);
+}
+
+void Position::print()
+{
+    for (int rank = 0; rank < 8; rank++)
     {
-        for (int rank = 0; rank < 8; rank++)
+        for (int file = 0; file < 8; file++)
         {
-            for (int file = 0; file < 8; file++)
+            int square = rank * 8 + file;
+
+            if (file == 0)
+                cout << abs(rank - 8) << " ";
+
+            bool found = false;
+            for (int piece = 0; piece < 12; piece++)
             {
-                int square = rank * 8 + file;
-
-                if (file == 0)
-                    cout << abs(rank - 8) << " ";
-
-                bool found = false;
-                for (int piece = 0; piece < 12; piece++)
+                if (pieces[piece].get_bit(square))
                 {
-                    if (pieces[piece].get_bit(square))
-                    {
-                        found = true;
-                        if (piece <= 11)
-                            cout << " " << PIECE_UNICODE[piece];
-                        else
-                            cout << " .";
-                    }
+                    found = true;
+                    if (piece <= 11)
+                        cout << " " << PIECE_UNICODE[piece];
+                    else
+                        cout << " .";
                 }
-                if (!found)
-                    cout << " .";
             }
-            cout << endl;
+            if (!found)
+                cout << " .";
         }
-        printf("\n   a b c d e f g h\n\n");
-    }
-
-    void print_attacked_squares(int color)
-    {
         cout << endl;
-        for (int rank = 0; rank < 8; rank++)
+    }
+    printf("\n   a b c d e f g h\n\n");
+}
+
+void Position::print_attacked_squares(int color)
+{
+    cout << endl;
+    for (int rank = 0; rank < 8; rank++)
+    {
+        for (int file = 0; file < 8; file++)
         {
-            for (int file = 0; file < 8; file++)
-            {
-                int square = rank * 8 + file;
+            int square = rank * 8 + file;
 
-                if (!file)
-                    printf("  %d ", 8 - rank);
+            if (!file)
+                printf("  %d ", 8 - rank);
 
-                printf(" %d", is_square_attacked(square, color) ? 1 : 0);
-            }
-
-            cout << endl;
+            printf(" %d", is_square_attacked(square, color) ? 1 : 0);
         }
 
-        // print files
-        printf("\n     a b c d e f g h\n\n");
+        cout << endl;
     }
 
-    void combine_boards()
-    {
-        BitBoard white = pieces[wPAWN] |
-                         pieces[wKNIGHT] |
-                         pieces[wBISHOP] |
-                         pieces[wROOK] |
-                         pieces[wQUEEN] |
-                         pieces[wKING];
-        BitBoard black = pieces[bPAWN] |
-                         pieces[bKNIGHT] |
-                         pieces[bBISHOP] |
-                         pieces[bROOK] |
-                         pieces[bQUEEN] |
-                         pieces[bKING];
-        BitBoard both = white | black;
+    // print files
+    printf("\n     a b c d e f g h\n\n");
+}
 
-        sides[0] = white;
-        sides[1] = black;
-        sides[2] = both;
+void Position::init_boards()
+{
+    for (int piece = 0; piece < 12; piece++)
+    {
+        BitBoard emptyBoard;
+        pieces[piece] = emptyBoard;
     }
+}
 
-private:
-    void init_boards()
+void Position::read_fen(string fen)
+{
+    int square = 0;
+    for (int i = 0; i < fen.length(); i++)
     {
-        for (int piece = 0; piece < 12; piece++)
+        int skippedSquares = 1;
+        switch (fen.at(i))
         {
-            BitBoard emptyBoard;
-            pieces[piece] = emptyBoard;
+        case 'p':
+            pieces[bPAWN].set_bit(square);
+            break;
+        case 'n':
+            pieces[bKNIGHT].set_bit(square);
+            break;
+        case 'b':
+            pieces[bBISHOP].set_bit(square);
+            break;
+        case 'r':
+            pieces[bROOK].set_bit(square);
+            break;
+        case 'q':
+            pieces[bQUEEN].set_bit(square);
+            break;
+        case 'k':
+            pieces[bKING].set_bit(square);
+            break;
+        case 'P':
+            pieces[wPAWN].set_bit(square);
+            break;
+        case 'N':
+            pieces[wKNIGHT].set_bit(square);
+            break;
+        case 'B':
+            pieces[wBISHOP].set_bit(square);
+            break;
+        case 'R':
+            pieces[wROOK].set_bit(square);
+            break;
+        case 'Q':
+            pieces[wQUEEN].set_bit(square);
+            break;
+        case 'K':
+            pieces[wKING].set_bit(square);
+            break;
+        case '/':
+            square--;
+            break;
+        default:
+            int skip = fen.at(i) - '0';
+            skippedSquares += skip - 1;
+            break;
         }
+        square += skippedSquares;
     }
-    void read_fen(string fen)
-    {
-        int square = 0;
-        for (int i = 0; i < fen.length(); i++)
-        {
-            int skippedSquares = 1;
-            switch (fen.at(i))
-            {
-            case 'p':
-                pieces[bPAWN].set_bit(square);
-                break;
-            case 'n':
-                pieces[bKNIGHT].set_bit(square);
-                break;
-            case 'b':
-                pieces[bBISHOP].set_bit(square);
-                break;
-            case 'r':
-                pieces[bROOK].set_bit(square);
-                break;
-            case 'q':
-                pieces[bQUEEN].set_bit(square);
-                break;
-            case 'k':
-                pieces[bKING].set_bit(square);
-                break;
-            case 'P':
-                pieces[wPAWN].set_bit(square);
-                break;
-            case 'N':
-                pieces[wKNIGHT].set_bit(square);
-                break;
-            case 'B':
-                pieces[wBISHOP].set_bit(square);
-                break;
-            case 'R':
-                pieces[wROOK].set_bit(square);
-                break;
-            case 'Q':
-                pieces[wQUEEN].set_bit(square);
-                break;
-            case 'K':
-                pieces[wKING].set_bit(square);
-                break;
-            case '/':
-                square--;
-                break;
-            default:
-                int skip = fen.at(i) - '0';
-                skippedSquares += skip - 1;
-                break;
-            }
-            square += skippedSquares;
-        }
-    }
+}
 
-    void set_position(string fen)
-    {
-        init_boards();
-        read_fen(fen);
-        combine_boards();
-    }
+void Position::set_position(string fen)
+{
+    init_boards();
+    read_fen(fen);
+    combine_boards();
+}
 
-    bool is_white_attacked(int square)
-    {
-        if ((PAWN_ATTACKS[BLACK][square] & pieces[wPAWN]) != empty_board)
-            return true;
-        if ((KNIGHT_ATTACKS[square] & pieces[wKNIGHT]) != empty_board)
-            return true;
-        if ((get_bishop_attacks(square, sides[BOTH]) & pieces[wBISHOP]) != empty_board)
-            return true;
-        if ((get_rook_attacks(square, sides[BOTH]) & pieces[wROOK]) != empty_board)
-            return true;
-        if ((get_queen_attacks(square, sides[BOTH]) & pieces[wQUEEN]) != empty_board)
-            return true;
-        if ((KING_ATTACKS[square] & pieces[wKING]) != empty_board)
-            return true;
+bool Position::is_white_attacked(int square)
+{
+    if (PAWN_ATTACKS[BLACK][square] & pieces[wPAWN])
+        return true;
+    if (KNIGHT_ATTACKS[square] & pieces[wKNIGHT])
+        return true;
+    if (get_bishop_attacks(square, sides[BOTH]) & pieces[wBISHOP])
+        return true;
+    if (get_rook_attacks(square, sides[BOTH]) & pieces[wROOK])
+        return true;
+    if (get_queen_attacks(square, sides[BOTH]) & pieces[wQUEEN])
+        return true;
 
-        return false;
-    }
+    return KING_ATTACKS[square] & pieces[wKING];
+}
 
-    bool is_black_attacked(int square)
-    {
-        if ((PAWN_ATTACKS[WHITE][square] & pieces[bPAWN]) != empty_board)
-            return true;
-        if ((KNIGHT_ATTACKS[square] & pieces[bKNIGHT]) != empty_board)
-            return true;
-        if ((get_bishop_attacks(square, sides[BOTH]) & pieces[bBISHOP]) != empty_board)
-            return true;
-        if ((get_rook_attacks(square, sides[BOTH]) & pieces[bROOK]) != empty_board)
-            return true;
-        if ((get_queen_attacks(square, sides[BOTH]) & pieces[bQUEEN]) != empty_board)
-            return true;
-        if ((KING_ATTACKS[square] & pieces[bKING]) != empty_board)
-            return true;
+bool Position::is_black_attacked(int square)
+{
+    if (PAWN_ATTACKS[WHITE][square] & pieces[bPAWN])
+        return true;
+    if (KNIGHT_ATTACKS[square] & pieces[bKNIGHT])
+        return true;
+    if (get_bishop_attacks(square, sides[BOTH]) & pieces[bBISHOP])
+        return true;
+    if (get_rook_attacks(square, sides[BOTH]) & pieces[bROOK])
+        return true;
+    if (get_queen_attacks(square, sides[BOTH]) & pieces[bQUEEN])
+        return true;
 
-        return false;
-    }
-};
+    return KING_ATTACKS[square] & pieces[bKING];
+}

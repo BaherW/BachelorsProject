@@ -1,109 +1,93 @@
-#pragma once
-#include "globals.h"
+#include "../headers/castling.h"
 
-class Castling
+uint8_t CASTLING_RIGHTS[BOARD_SIZE] = {
+    7, 15, 15, 15,  3, 15, 15, 11,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   15, 15, 15, 15, 15, 15, 15, 15,
+   13, 15, 15, 15, 12, 15, 15, 14
+};
+
+Castling::Castling()
 {
-public:
-    uint8_t castle_rights;
+    castle_rights = 0b00001111;
+}
 
-    Castling()
-    {
-        castle_rights = 0b00001111;
-    }
+Castling::Castling(uint8_t rights)
+{
+    castle_rights = rights;
+}
 
-    Castling(uint8_t rights)
+Castling::Castling(string fen)
+{
+    castle_rights = 0b00000000;
+    if (fen == "-")
+        return;
+    else
     {
-        castle_rights = rights;
-    }
-
-    Castling(string fen)
-    {
-        castle_rights = 0b00000000;
-        if (fen == "-")
-            return;
-        else
+        for (char c : fen)
         {
-            for (char c : fen)
+            switch (c)
             {
-                switch (c)
-                {
-                case 'K':
-                    castle_rights |= 0b0001;
-                    break;
-                case 'Q':
-                    castle_rights |= 0b0010;
-                    break;
-                case 'k':
-                    castle_rights |= 0b0100;
-                    break;
-                case 'q':
-                    castle_rights |= 0b1000;
-                    break;
-                default:
-                    break;
-                }
+            case 'K':
+                castle_rights |= 0b0001;
+                break;
+            case 'Q':
+                castle_rights |= 0b0010;
+                break;
+            case 'k':
+                castle_rights |= 0b0100;
+                break;
+            case 'q':
+                castle_rights |= 0b1000;
+                break;
+            default:
+                break;
             }
         }
     }
+}
 
-    void update_castle_right(int source, int target)
-    {
-        castle_rights &= CASTLING_RIGHTS[source] & CASTLING_RIGHTS[target];
-    }
+void Castling::update_castle_right(const int &source, const int &target)
+{
+    castle_rights &= CASTLING_RIGHTS[source] & CASTLING_RIGHTS[target];
+}
 
-    bool wk_can_castle()
-    {
-        return castle_rights & 0b00000001;
-    }
+bool Castling::wk_can_castle()
+{
+    return castle_rights & 0b00000001;
+}
 
-    bool wq_can_castle()
-    {
-        return castle_rights & 0b00000010;
-    }
+bool Castling::wq_can_castle()
+{
+    return castle_rights & 0b00000010;
+}
 
-    bool bk_can_castle()
-    {
-        return castle_rights & 0b00000100;
-    }
+bool Castling::bk_can_castle()
+{
+    return castle_rights & 0b00000100;
+}
 
-    bool bq_can_castle()
-    {
-        return castle_rights & 0b00001000;
-    }
+bool Castling::bq_can_castle()
+{
+    return castle_rights & 0b00001000;
+}
 
-    void disable_wk_castle()
-    {
-        castle_rights &= 0b00001110;
-    }
-
-    void disable_wq_castle()
-    {
-        castle_rights &= 0b00001101;
-    }
-
-    void disable_bk_castle()
-    {
-        castle_rights &= 0b00001011;
-    }
-
-    void disable_bq_castle()
-    {
-        castle_rights &= 0b00000111;
-    }
-
-    void print()
-    {
-        string output = "Castling: ";
-        if (wk_can_castle())
-            output.append("K");
-        if (wq_can_castle())
-            output.append("Q");
-        if (bk_can_castle())
-            output.append("k");
-        if (bq_can_castle())
-            output.append("q");
-        if (output == "Castling: ")
-            output.append("-");
-        cout << output;
-    }
-};
+void Castling::print()
+{
+    string output = "Castling: ";
+    if (wk_can_castle())
+        output.append("K");
+    if (wq_can_castle())
+        output.append("Q");
+    if (bk_can_castle())
+        output.append("k");
+    if (bq_can_castle())
+        output.append("q");
+    if (output == "Castling: ")
+        output.append("-");
+    cout << output;
+}
