@@ -1,6 +1,6 @@
 # Compiler settings
 CXX := x86_64-w64-mingw32-g++
-CXXFLAGS := -static -Ofast
+CXXFLAGS := -static -Ofast -march=native -flto -ftree-vectorize -finline-functions
 
 # Directories
 SRCDIR := src

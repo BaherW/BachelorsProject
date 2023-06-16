@@ -1,17 +1,34 @@
 #include "../headers/magic_attacks.h"
+#include "../headers/attacks.h"
 
 BitBoard BISHOP_MASKS[BOARD_SIZE];
 BitBoard ROOK_MASKS[BOARD_SIZE];
 
-int RELEVANT_OCCUPANCY_BISHOP[BOARD_SIZE];
-int RELEVANT_OCCUPANCY_ROOK[BOARD_SIZE];
+int RELEVANT_OCCUPANCY_BISHOP[BOARD_SIZE] = {
+    6, 5, 5, 5, 5, 5, 5, 6,
+    5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 7, 7, 7, 7, 5, 5,
+    5, 5, 7, 9, 9, 7, 5, 5,
+    5, 5, 7, 9, 9, 7, 5, 5,
+    5, 5, 7, 7, 7, 7, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5,
+    6, 5, 5, 5, 5, 5, 5, 6};
+
+int RELEVANT_OCCUPANCY_ROOK[BOARD_SIZE] = {
+    12, 11, 11, 11, 11, 11, 11, 12,
+    11, 10, 10, 10, 10, 10, 10, 11,
+    11, 10, 10, 10, 10, 10, 10, 11,
+    11, 10, 10, 10, 10, 10, 10, 11,
+    11, 10, 10, 10, 10, 10, 10, 11,
+    11, 10, 10, 10, 10, 10, 10, 11,
+    11, 10, 10, 10, 10, 10, 10, 11,
+    12, 11, 11, 11, 11, 11, 11, 12};
 
 BitBoard BISHOP_MAGICS[BOARD_SIZE];
 BitBoard ROOK_MAGICS[BOARD_SIZE];
 
 BitBoard BISHOP_ATTACKS[64][512];
 BitBoard ROOK_ATTACKS[64][4096];
-
 
 BitBoard generate_random_magic()
 {
@@ -82,12 +99,9 @@ void init_magic_numbers()
         BISHOP_MASKS[square] = bishop_attacks_mask(square, EMPTY_BOARD, 0);
         ROOK_MASKS[square] = rook_attacks_mask(square, EMPTY_BOARD, 0);
 
-        RELEVANT_OCCUPANCY_BISHOP[square] = BISHOP_MASKS[square].pop_count();
-        RELEVANT_OCCUPANCY_ROOK[square] = ROOK_MASKS[square].pop_count();
-
         // Currently my magic numbers are stored in magics.cpp, to regenerate them uncomment the following lines and print them:
-        //BISHOP_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_BISHOP[square], BISHOP);
-        //ROOK_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_ROOK[square], ROOK);
+        // BISHOP_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_BISHOP[square], BISHOP);
+        // ROOK_MAGICS[square] = find_magic_number(square, RELEVANT_OCCUPANCY_ROOK[square], ROOK);
 
         // Comment these lines out if we are generating new magic numbers.
         BISHOP_MAGICS[square] = BISHOP_SAVED_MAGICS[square];
@@ -99,19 +113,19 @@ void init_attacks()
 {
     for (int square = 0; square < BOARD_SIZE; square++)
     {
-        int bishop_bits = BISHOP_MASKS[square].pop_count();
-        int rook_bits = ROOK_MASKS[square].pop_count();
+        int bishop_bits = RELEVANT_OCCUPANCY_BISHOP[square];
+        int rook_bits = RELEVANT_OCCUPANCY_ROOK[square];
 
         for (int i = 0; i < (1 << bishop_bits); i++)
         {
             BitBoard occupancy = get_occupancy_bitboard(i, bishop_bits, BISHOP_MASKS[square]);
-            int magic_index = (occupancy * BISHOP_MAGICS[square]) >> (64 - RELEVANT_OCCUPANCY_BISHOP[square]);
+            int magic_index = (occupancy * BISHOP_MAGICS[square]) >> (64 - bishop_bits);
             BISHOP_ATTACKS[square][magic_index] = bishop_attacks_mask(square, occupancy, 1);
         }
         for (int i = 0; i < (1 << rook_bits); i++)
         {
             BitBoard occupancy = get_occupancy_bitboard(i, rook_bits, ROOK_MASKS[square]);
-            int magic_index = (occupancy * ROOK_MAGICS[square]) >> (64 - RELEVANT_OCCUPANCY_ROOK[square]);
+            int magic_index = (occupancy * ROOK_MAGICS[square]) >> (64 - rook_bits);
             ROOK_ATTACKS[square][magic_index] = rook_attacks_mask(square, occupancy, 1);
         }
     }
@@ -125,6 +139,9 @@ void init_magic_attacks()
 
 BitBoard get_bishop_attacks(const int &square, BitBoard occupancy)
 {
+    //Turn off Magic Bitboard:
+    //return bishop_attacks_mask(square, occupancy, 1);
+
     occupancy &= BISHOP_MASKS[square];
     occupancy *= BISHOP_MAGICS[square];
     occupancy >>= 64 - RELEVANT_OCCUPANCY_BISHOP[square];
@@ -134,6 +151,9 @@ BitBoard get_bishop_attacks(const int &square, BitBoard occupancy)
 
 BitBoard get_rook_attacks(const int &square, BitBoard occupancy)
 {
+    // Turn off Magic Bitboard:
+    //return rook_attacks_mask(square, occupancy, 1);
+
     occupancy &= ROOK_MASKS[square];
     occupancy *= ROOK_MAGICS[square];
     occupancy >>= 64 - RELEVANT_OCCUPANCY_ROOK[square];

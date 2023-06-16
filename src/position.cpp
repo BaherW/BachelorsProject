@@ -1,5 +1,6 @@
 #include "../headers/position.h"
 #include "../headers/attacks.h"
+#include "../headers/magic_attacks.h"
 
 Position::Position()
 {

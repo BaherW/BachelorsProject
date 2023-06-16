@@ -32,5 +32,6 @@ public:
     explicit operator bool() const;
     operator size_t() const;
     U64 get_board();
+    void printLatexBitboardString();
     void print();
 };

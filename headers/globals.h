@@ -80,7 +80,3 @@ const BitBoard NOT_GH_FILE = NOT_G_FILE & NOT_H_FILE;
 extern U64 random_U64();
 
 extern string SQUARE_TO_STRING[BOARD_SIZE];
-
-BitBoard get_bishop_attacks(const int &square, BitBoard occupancy);
-BitBoard get_rook_attacks(const int &square, BitBoard occupancy);
-BitBoard get_queen_attacks(const int &square, BitBoard occupancy);

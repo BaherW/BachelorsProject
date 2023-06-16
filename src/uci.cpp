@@ -39,7 +39,7 @@ void UCI::handle_go()
 {
     tt.clear();
     Searcher searcher;
-    searcher.search(6, state);
+    searcher.search(7, state);
 
     Move best_move = searcher.best_move;
 

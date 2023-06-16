@@ -17,24 +17,24 @@ Move::Move(const uint8_t &source, const uint8_t &target, const uint8_t &piece, c
             (castling << 23));
 }
 
-uint64_t Move::get_source() const
+uint8_t Move::get_source() const
 {
-    return (move & 0x3F);
+    return move & 0x3F;
 }
 
-uint64_t Move::get_target() const
+uint8_t Move::get_target() const
 {
-    return (move & 0xfc0) >> 6;
+    return (move & 0xFC0) >> 6;
 }
 
-uint64_t Move::get_piece() const
+uint8_t Move::get_piece() const
 {
-    return (move & 0xf000) >> 12;
+    return (move & 0xF000) >> 12;
 }
 
-uint64_t Move::get_promoted_piece() const
+uint8_t Move::get_promoted_piece() const
 {
-    return (move & 0xf0000) >> 16;
+    return (move & 0xF0000) >> 16;
 }
 
 bool Move::is_capture() const

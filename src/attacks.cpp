@@ -1,4 +1,5 @@
-#include "../headers/state.h"
+#include "../headers/attacks.h"
+#include "../headers/magic_attacks.h"
 
 BitBoard PAWN_ATTACKS[2][BOARD_SIZE];
 BitBoard KNIGHT_ATTACKS[BOARD_SIZE];
@@ -89,7 +90,9 @@ void generate_pawn_moves(int color, MoveList &move_list, State &state)
             // Enpassant capture
             if (state.enpassant != 0)
             {
-                BitBoard enpassant_attacks = PAWN_ATTACKS[WHITE][source] & (BitBoard(1) << state.enpassant);
+                BitBoard enpassant_square;
+                enpassant_square.set_bit(state.enpassant);
+                BitBoard enpassant_attacks = PAWN_ATTACKS[WHITE][source] & enpassant_square;
                 if (enpassant_attacks)
                 {
                     target = enpassant_attacks.get_ls1b_index();
@@ -152,7 +155,9 @@ void generate_pawn_moves(int color, MoveList &move_list, State &state)
             // Enpassant capture
             if (state.enpassant != 0)
             {
-                BitBoard enpassant_attacks = PAWN_ATTACKS[BLACK][source] & (BitBoard(1) << state.enpassant);
+                BitBoard enpassant_square;
+                enpassant_square.set_bit(state.enpassant);
+                BitBoard enpassant_attacks = PAWN_ATTACKS[BLACK][source] & enpassant_square;
                 if (enpassant_attacks)
                 {
                     target = enpassant_attacks.get_ls1b_index();
@@ -296,7 +301,7 @@ void generate_king_moves(int color, MoveList &move_list, State &state)
         {
             source = board.get_ls1b_index();
             attacks = KING_ATTACKS[source] & !state.position.sides[WHITE];
-            
+
             while (attacks)
             {
                 target = attacks.get_ls1b_index();
@@ -335,7 +340,7 @@ void generate_king_moves(int color, MoveList &move_list, State &state)
         {
             source = board.get_ls1b_index();
             attacks = KING_ATTACKS[source] & !state.position.sides[BLACK];
-            
+
             while (attacks)
             {
                 target = attacks.get_ls1b_index();

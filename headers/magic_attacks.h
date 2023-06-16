@@ -1,18 +1,6 @@
 #pragma once
 
-#include "attacks.h"
-
-extern BitBoard BISHOP_MASKS[BOARD_SIZE];
-extern BitBoard ROOK_MASKS[BOARD_SIZE];
-
-extern int RELEVANT_OCCUPANCY_BISHOP[BOARD_SIZE];
-extern int RELEVANT_OCCUPANCY_ROOK[BOARD_SIZE];
-
-extern BitBoard BISHOP_MAGICS[BOARD_SIZE];
-extern BitBoard ROOK_MAGICS[BOARD_SIZE];
-
-extern BitBoard BISHOP_ATTACKS[64][512];
-extern BitBoard ROOK_ATTACKS[64][4096];
+#include "globals.h"
 
 extern BitBoard BISHOP_SAVED_MAGICS[BOARD_SIZE];
 extern BitBoard ROOK_SAVED_MAGICS[BOARD_SIZE];

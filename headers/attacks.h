@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "state.h"
 
+
 extern BitBoard PAWN_ATTACKS[2][BOARD_SIZE];
 extern BitBoard KNIGHT_ATTACKS[BOARD_SIZE];
 extern BitBoard KING_ATTACKS[BOARD_SIZE];

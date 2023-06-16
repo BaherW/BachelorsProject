@@ -60,7 +60,7 @@ BitBoard BitBoard::operator!()
     return BitBoard(~board);
 }
 
-BitBoard BitBoard::operator>>(const int &n) 
+BitBoard BitBoard::operator>>(const int &n)
 {
     return BitBoard(board >> n);
 }
@@ -71,7 +71,7 @@ BitBoard &BitBoard::operator>>=(const int &n)
     return *this;
 }
 
-BitBoard BitBoard::operator<<(const int &n) 
+BitBoard BitBoard::operator<<(const int &n)
 {
     return BitBoard(board << n);
 }
@@ -110,6 +110,34 @@ BitBoard::operator size_t() const
 U64 BitBoard::get_board()
 {
     return board;
+}
+
+void BitBoard::printLatexBitboardString()
+{
+    uint64_t value = board;
+    std::stringstream ss;
+    ss << "\\bitboard{";
+    for (int row = 0; row < 8; ++row)
+    {
+        ss << "{";
+        for (int col = 0; col < 8; ++col)
+        {
+            int index = row * 8 + col;
+            bool bit = (value >> index) & 1;
+            ss << bit;
+            if (col < 7)
+            {
+                ss << ",";
+            }
+        }
+        ss << "}";
+        if (row < 7)
+        {
+            ss << ",";
+        }
+    }
+    ss << "}";
+    cout << ss.str() << endl;
 }
 
 void BitBoard::print()

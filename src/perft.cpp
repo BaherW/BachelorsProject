@@ -1,8 +1,5 @@
 #include <chrono>
-#include "../headers/globals.h"
-#include "../headers/movegen.h"
-#include "../headers/movelist.h"
-#include "../headers/state.h"
+#include "../headers/perft.h"
 
 U64 perft(int depth, State &state)
 {
@@ -19,6 +16,7 @@ U64 perft(int depth, State &state)
     for (i = 0; i < n_moves; i++)
     {
         State old_state = state;
+        // If move is legal
         if (state.play_move(move_list.moves[i]))
             nodes += perft(depth - 1, state);
         state = old_state;
@@ -33,6 +31,6 @@ void time_perft(int depth, State &state)
     auto end = chrono::steady_clock::now();
 
     chrono::duration<double> elapsed_seconds = end - start;
-    cout << "Perft Result: " << result << endl;
-    cout << "Elapsed Time: " << elapsed_seconds.count() << " seconds" << endl;
+    std::cout << "Perft Result: " << result << endl;
+    std::cout << "Elapsed Time: " << elapsed_seconds.count() << " seconds" << endl;
 }

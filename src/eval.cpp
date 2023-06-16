@@ -1,207 +1,217 @@
 #include "../headers/eval.h"
 
-const int opening_phase_score = 5900;
-const int endgame_phase_score = 500;
+#define PAWN   0
+#define KNIGHT 1
+#define BISHOP 2
+#define ROOK   3
+#define QUEEN  4
+#define KING   5
 
-const int piece_value[2][12]{
-    {89, 308, 319, 488, 888, 20001, -92, -307, -323, -492, -888, -20002},
-    {96, 319, 331, 497, 853, 19998, -102, -318, -334, -501, -845, -20000}};
+#define WHITE_PAWN      (2*PAWN   + WHITE)
+#define BLACK_PAWN      (2*PAWN   + BLACK)
+#define WHITE_KNIGHT    (2*KNIGHT + WHITE)
+#define BLACK_KNIGHT    (2*KNIGHT + BLACK)
+#define WHITE_BISHOP    (2*BISHOP + WHITE)
+#define BLACK_BISHOP    (2*BISHOP + BLACK)
+#define WHITE_ROOK      (2*ROOK   + WHITE)
+#define BLACK_ROOK      (2*ROOK   + BLACK)
+#define WHITE_QUEEN     (2*QUEEN  + WHITE)
+#define BLACK_QUEEN     (2*QUEEN  + BLACK)
+#define WHITE_KING      (2*KING   + WHITE)
+#define BLACK_KING      (2*KING   + BLACK)
+#define EMPTY           (BLACK_KING  +  1)
 
+#define PCOLOR(p) ((p) / 6)
 
-// piece-square tables
-const int pst[2][6][64] = {
-    // opening phase scores
-    {
-      // pawn
-      {
-           0,   0,   0,   0,   0,   0,   0,   0,   
-          -4,  68,  61,  47,  47,  49,  45,  -1,   
-           6,  16,  25,  33,  24,  24,  14,  -6,   
-           0,  -1,   9,  28,  20,   8,  -1,  11,   
-           6,   4,   6,  14,  14,  -5,   6,  -6,   
-          -1,  -8,  -4,   4,   2, -12,  -1,   5,   
-           5,  16,  16, -14, -14,  13,  15,   8,   
-           0,   0,   0,   0,   0,   0,   0,   0,   
-      },
+#define FLIP(sq) ((sq)^56)
+#define OTHER(side) ((side)^ 1)
 
-      // knight
-      {
-         -55, -40, -30, -28, -26, -30, -40, -50,   
-         -37, -15,   0,  -6,   4,   3, -17, -40,   
-         -25,   5,  16,  12,  11,   6,   6, -29,   
-         -24,   5,  21,  14,  18,   9,  11, -26,   
-         -36,  -5,   9,  23,  24,  21,   2, -24,   
-         -32,  -1,   4,  19,  20,   4,  11, -25,   
-         -38, -22,   4,  -1,   8,  -5, -18, -34,   
-         -50, -46, -32, -24, -36, -25, -34, -50,   
-      },
+int mg_value[6] = { 82, 337, 365, 477, 1025,  0};
+int eg_value[6] = { 94, 281, 297, 512,  936,  0};
 
-      // bishop
-      {
-         -16, -15, -12,  -5, -10, -12, -10, -20,   
-         -13,   5,   6,   1,  -6,  -5,   3,  -6,   
-         -16,   6,  -1,  16,   7,  -1,  -6,  -5,   
-         -14,  -1,  11,  14,   4,  10,  11, -13,   
-          -4,   5,  12,  16,   4,   6,   2, -16,   
-         -15,   4,  14,   8,  16,   4,  16, -15,   
-          -5,   6,   6,   6,   3,   6,   9,  -7,   
-         -14,  -4, -15,  -4,  -9,  -4, -12, -14,   
-      },
+/* piece/sq tables */
+/* values from Rofchade: http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19 */
 
-      // rook
-      {
-           5,  -2,   6,   2,  -2,  -6,   4,  -2,   
-           8,  13,  11,  15,  11,  15,  16,   4,   
-          -6,   3,   3,   6,   1,  -2,   3,  -5,   
-         -10,   5,  -4,  -4,  -1,  -6,   3,  -2,   
-          -4,   3,   5,  -2,   4,   1,  -5,   1,   
-           0,   1,   1,  -3,   5,   6,   1,  -9,   
-         -10,  -1,  -4,   0,   5,  -6,  -6,  -9,   
-          -1,  -2,  -6,   9,   9,   5,   4,  -5,   
-      },
-
-      // queen
-      {
-         -25,  -9, -11,  -3,  -7, -13, -10, -17,   
-          -4,  -6,   4,  -5,  -1,   6,   4,  -5,   
-          -8,  -5,   2,   0,   7,   6,  -4,  -5,   
-           0,  -4,   7,  -1,   7,  11,   0,   1,   
-          -6,   4,   7,   1,  -1,   2,  -6,  -2,   
-         -15,  11,  11,  11,   4,  11,   6, -15,   
-          -5,  -6,   1,  -6,   3,  -3,   3, -10,   
-         -15,  -4, -13,  -8,  -3, -16,  -8, -24,   
-      },
-
-      // king
-      {
-         -30, -40, -40, -50, -50, -40, -40, -30,   
-         -30, -37, -43, -49, -50, -39, -40, -30,   
-         -32, -41, -40, -46, -49, -40, -46, -30,   
-         -32, -38, -39, -52, -54, -39, -39, -30,   
-         -20, -33, -29, -42, -44, -29, -30, -19,   
-         -10, -18, -17, -20, -22, -21, -20, -13,   
-          14,  18,  -1,  -1,   4,  -1,  15,  14,   
-          21,  35,  11,   6,   1,  14,  32,  22,   
-      }
-    },
-
-    // endgame phase score
-    {
-      // pawn
-      {
-           0,   0,   0,   0,   0,   0,   0,   0,   
-          -4, 174, 120,  94,  85,  98,  68,   4,   
-           6,  48,  44,  45,  31,  38,  37,  -6,   
-          -6,  -4,  -1,  -6,   2,  -1,  -2,  -2,   
-           2,   2,   5,  -3,   0,  -5,   4,  -3,   
-          -2,   0,   1,   5,   0,  -1,   0,   1,   
-          -2,   5,   6,  -6,   0,   3,   4,  -4,   
-           0,   0,   0,   0,   0,   0,   0,   0,   
-      },
-
-      // knight
-      {
-         -50, -40, -30, -24, -24, -35, -40, -50,   
-         -38, -17,   6,  -5,   5,  -4, -15, -40,   
-         -24,   3,  15,   9,  15,  10,  -6, -26,   
-         -29,   5,  21,  17,  18,   9,  10, -28,   
-         -36,  -5,  18,  16,  14,  20,   5, -26,   
-         -32,   7,   5,  20,  11,  15,   9, -27,   
-         -43, -20,   5,  -1,   5,   1, -22, -40,   
-         -50, -40, -32, -27, -30, -25, -35, -50,   
-      },
-
-      // bishop
-      {
-         -14, -13,  -4,  -7, -14,  -9, -16, -20,   
-         -11,   6,   3,  -6,   4,  -3,   5,  -4,   
-         -11,  -3,   5,  15,   4,  -1,  -5, -10,   
-          -7,  -1,  11,  16,   5,  11,   7, -13,   
-          -4,   4,  10,  16,   6,  12,   4, -16,   
-          -4,   4,  11,  12,  10,   7,   7, -12,   
-         -11,   7,   6,   6,  -3,   2,   1,  -7,   
-         -15,  -4, -11,  -4, -10, -10,  -6, -17,   
-      },
-
-      // rook
-      {
-           5,  -6,   1,  -4,  -4,  -6,   6,  -3,   
-          -6,   4,   2,   5,  -1,   3,   4, -15,   
-         -15,   3,   3,   0,  -1,  -6,   5,  -9,   
-         -16,   6,   0,  -6,  -3,  -3,  -4,  -4,   
-         -15,   6,   2,  -6,   6,   0,  -6, -10,   
-          -6,  -1,   3,  -2,   6,   5,   0, -15,   
-          -8,  -4,   1,  -4,   3,  -5,  -6,  -5,   
-           1,   0,  -2,   1,   1,   4,   2,   0,   
-      },
-
-      // queen
-      {
-         -21,  -7,  -6,   1,  -8, -15, -10, -16,   
-          -4,  -5,   3,  -4,   2,   6,   3, -10,   
-         -13,  -2,   7,   2,   6,  10,  -4,  -6,   
-          -1,  -4,   3,   1,   8,   8,  -2,  -2,   
-           0,   6,   8,   1,  -1,   1,   0,  -3,   
-         -11,  10,   6,   3,   7,   9,   4, -10,   
-         -12,  -6,   5,   0,   0,  -5,   4, -10,   
-         -20,  -6,  -7,  -7,  -4, -12,  -9, -20,   
-      },
-
-      // king
-      {
-         -50, -40, -30, -20, -20, -30, -40, -50,   
-         -30, -18, -15,   6,   3,  -6, -24, -30,   
-         -35, -16,  20,  32,  34,  14, -11, -30,   
-         -34,  -5,  24,  35,  34,  35, -16, -35,   
-         -36,  -7,  31,  34,  34,  34, -12, -31,   
-         -30,  -7,  14,  33,  36,  16, -13, -33,   
-         -36, -27,   5,   2,   5,  -1, -31, -33,   
-         -48, -26, -26, -26, -28, -25, -30, -51,   
-      }
-    }
+int mg_pawn_table[64] = {
+      0,   0,   0,   0,   0,   0,  0,   0,
+     98, 134,  61,  95,  68, 126, 34, -11,
+     -6,   7,  26,  31,  65,  56, 25, -20,
+    -14,  13,   6,  21,  23,  12, 17, -23,
+    -27,  -2,  -5,  12,  17,   6, 10, -25,
+    -26,  -4,  -4, -10,   3,   3, 33, -12,
+    -35,  -1, -20, -23, -15,  24, 38, -22,
+      0,   0,   0,   0,   0,   0,  0,   0,
 };
 
-  // mirror positional score tables for opposite side
-const int mirrorSquare[64] = {
-    a1, b1, c1, d1, e1, f1, g1, h1,   
-    a2, b2, c2, d2, e2, f2, g2, h2,   
-    a3, b3, c3, d3, e3, f3, g3, h3,   
-    a4, b4, c4, d4, e4, f4, g4, h4,   
-    a5, b5, c5, d5, e5, f5, g5, h5,   
-    a6, b6, c6, d6, e6, f6, g6, h6,   
-    a7, b7, c7, d7, e7, f7, g7, h7,   
-    a8, b8, c8, d8, e8, f8, g8, h8,   
+int eg_pawn_table[64] = {
+      0,   0,   0,   0,   0,   0,   0,   0,
+    178, 173, 158, 134, 147, 132, 165, 187,
+     94, 100,  85,  67,  56,  53,  82,  84,
+     32,  24,  13,   5,  -2,   4,  17,  17,
+     13,   9,  -3,  -7,  -7,  -8,   3,  -1,
+      4,   7,  -6,   1,   0,  -5,  -1,  -8,
+     13,   8,   8,  10,  13,   0,   2,  -7,
+      0,   0,   0,   0,   0,   0,   0,   0,
 };
-  
-int get_game_phase_score(State &state)
+
+int mg_knight_table[64] = {
+    -167, -89, -34, -49,  61, -97, -15, -107,
+     -73, -41,  72,  36,  23,  62,   7,  -17,
+     -47,  60,  37,  65,  84, 129,  73,   44,
+      -9,  17,  19,  53,  37,  69,  18,   22,
+     -13,   4,  16,  13,  28,  19,  21,   -8,
+     -23,  -9,  12,  10,  19,  17,  25,  -16,
+     -29, -53, -12,  -3,  -1,  18, -14,  -19,
+    -105, -21, -58, -33, -17, -28, -19,  -23,
+};
+
+int eg_knight_table[64] = {
+    -58, -38, -13, -28, -31, -27, -63, -99,
+    -25,  -8, -25,  -2,  -9, -25, -24, -52,
+    -24, -20,  10,   9,  -1,  -9, -19, -41,
+    -17,   3,  22,  22,  22,  11,   8, -18,
+    -18,  -6,  16,  25,  16,  17,   4, -18,
+    -23,  -3,  -1,  15,  10,  -3, -20, -22,
+    -42, -20, -10,  -5,  -2, -20, -23, -44,
+    -29, -51, -23, -15, -22, -18, -50, -64,
+};
+
+int mg_bishop_table[64] = {
+    -29,   4, -82, -37, -25, -42,   7,  -8,
+    -26,  16, -18, -13,  30,  59,  18, -47,
+    -16,  37,  43,  40,  35,  50,  37,  -2,
+     -4,   5,  19,  50,  37,  37,   7,  -2,
+     -6,  13,  13,  26,  34,  12,  10,   4,
+      0,  15,  15,  15,  14,  27,  18,  10,
+      4,  15,  16,   0,   7,  21,  33,   1,
+    -33,  -3, -14, -21, -13, -12, -39, -21,
+};
+
+int eg_bishop_table[64] = {
+    -14, -21, -11,  -8, -7,  -9, -17, -24,
+     -8,  -4,   7, -12, -3, -13,  -4, -14,
+      2,  -8,   0,  -1, -2,   6,   0,   4,
+     -3,   9,  12,   9, 14,  10,   3,   2,
+     -6,   3,  13,  19,  7,  10,  -3,  -9,
+    -12,  -3,   8,  10, 13,   3,  -7, -15,
+    -14, -18,  -7,  -1,  4,  -9, -15, -27,
+    -23,  -9, -23,  -5, -9, -16,  -5, -17,
+};
+
+int mg_rook_table[64] = {
+     32,  42,  32,  51, 63,  9,  31,  43,
+     27,  32,  58,  62, 80, 67,  26,  44,
+     -5,  19,  26,  36, 17, 45,  61,  16,
+    -24, -11,   7,  26, 24, 35,  -8, -20,
+    -36, -26, -12,  -1,  9, -7,   6, -23,
+    -45, -25, -16, -17,  3,  0,  -5, -33,
+    -44, -16, -20,  -9, -1, 11,  -6, -71,
+    -19, -13,   1,  17, 16,  7, -37, -26,
+};
+
+int eg_rook_table[64] = {
+    13, 10, 18, 15, 12,  12,   8,   5,
+    11, 13, 13, 11, -3,   3,   8,   3,
+     7,  7,  7,  5,  4,  -3,  -5,  -3,
+     4,  3, 13,  1,  2,   1,  -1,   2,
+     3,  5,  8,  4, -5,  -6,  -8, -11,
+    -4,  0, -5, -1, -7, -12,  -8, -16,
+    -6, -6,  0,  2, -9,  -9, -11,  -3,
+    -9,  2,  3, -1, -5, -13,   4, -20,
+};
+
+int mg_queen_table[64] = {
+    -28,   0,  29,  12,  59,  44,  43,  45,
+    -24, -39,  -5,   1, -16,  57,  28,  54,
+    -13, -17,   7,   8,  29,  56,  47,  57,
+    -27, -27, -16, -16,  -1,  17,  -2,   1,
+     -9, -26,  -9, -10,  -2,  -4,   3,  -3,
+    -14,   2, -11,  -2,  -5,   2,  14,   5,
+    -35,  -8,  11,   2,   8,  15,  -3,   1,
+     -1, -18,  -9,  10, -15, -25, -31, -50,
+};
+
+int eg_queen_table[64] = {
+     -9,  22,  22,  27,  27,  19,  10,  20,
+    -17,  20,  32,  41,  58,  25,  30,   0,
+    -20,   6,   9,  49,  47,  35,  19,   9,
+      3,  22,  24,  45,  57,  40,  57,  36,
+    -18,  28,  19,  47,  31,  34,  39,  23,
+    -16, -27,  15,   6,   9,  17,  10,   5,
+    -22, -23, -30, -16, -16, -23, -36, -32,
+    -33, -28, -22, -43,  -5, -32, -20, -41,
+};
+
+int mg_king_table[64] = {
+    -65,  23,  16, -15, -56, -34,   2,  13,
+     29,  -1, -20,  -7,  -8,  -4, -38, -29,
+     -9,  24,   2, -16, -20,   6,  22, -22,
+    -17, -20, -12, -27, -30, -25, -14, -36,
+    -49,  -1, -27, -39, -46, -44, -33, -51,
+    -14, -14, -22, -46, -44, -30, -15, -27,
+      1,   7,  -8, -64, -43, -16,   9,   8,
+    -15,  36,  12, -54,   8, -28,  24,  14,
+};
+
+int eg_king_table[64] = {
+    -74, -35, -18, -18, -11,  15,   4, -17,
+    -12,  17,  14,  17,  17,  38,  23,  11,
+     10,  17,  23,  15,  20,  45,  44,  13,
+     -8,  22,  24,  27,  26,  33,  26,   3,
+    -18,  -4,  21,  24,  27,  23,   9, -11,
+    -19,  -3,  11,  21,  23,  16,   7,  -9,
+    -27, -11,   4,  13,  14,   4,  -5, -17,
+    -53, -34, -21, -11, -28, -14, -24, -43
+};
+
+int* mg_pesto_table[6] =
 {
-    int p;
-    int score = 0;
+    mg_pawn_table,
+    mg_knight_table,
+    mg_bishop_table,
+    mg_rook_table,
+    mg_queen_table,
+    mg_king_table
+};
 
-    for (int p = wKNIGHT; p <= wQUEEN; p++)
-        score += state.position.pieces[p].pop_count() * piece_value[opening][p];
+int* eg_pesto_table[6] =
+{
+    eg_pawn_table,
+    eg_knight_table,
+    eg_bishop_table,
+    eg_rook_table,
+    eg_queen_table,
+    eg_king_table
+};
 
-    for (int p = bKNIGHT; p <= bQUEEN; p++)
-        score += state.position.pieces[p].pop_count() * -piece_value[opening][p];
+int gamephaseInc[12] = {0,0,1,1,1,1,2,2,4,4,0,0};
+int mg_table[12][64];
+int eg_table[12][64];
 
-    return score;
+void init_pesto_tables()
+{
+    for (int p = wPAWN; p <= wKING; p++)
+    {
+        for (int sq = 0; sq < BOARD_SIZE; sq++)
+        {
+            mg_table[p][sq] = mg_value[p] + mg_pesto_table[p][sq];
+            eg_table[p][sq] = eg_value[p] + eg_pesto_table[p][sq];
+            mg_table[p + 6][sq] = mg_value[p] + mg_pesto_table[p][FLIP(sq)];
+            eg_table[p + 6][sq] = eg_value[p] + eg_pesto_table[p][FLIP(sq)];
+        }
+    }
 }
 
 int eval(State &state)
 {
-    int game_phase_score = get_game_phase_score(state);
+    int mg[2];
+    int eg[2];
+    int gamePhase = 0;
 
-    int game_phase = -1;
-    if (game_phase_score > opening_phase_score)
-        game_phase = opening;
-    else if (game_phase_score < endgame_phase_score)
-        game_phase = endgame;
-    else
-        game_phase = middlegame;
-
-    int score = 0;
-    int scoreOpening = 0;
-    int scoreEndgame = 0;
+    mg[WHITE] = 0;
+    mg[BLACK] = 0;
+    eg[WHITE] = 0;
+    eg[BLACK] = 0;
 
     for (int p = wPAWN; p <= bKING; p++)
     {
@@ -209,86 +219,21 @@ int eval(State &state)
 
         while (board)
         {
-            scoreOpening += piece_value[opening][p];
-            scoreEndgame += piece_value[endgame][p];
-
             int square = board.get_ls1b_index();
 
-            switch (p)
-            {
-            case wPAWN:
-                scoreOpening += pst[opening][PAWN][square];
-                scoreEndgame += pst[endgame][PAWN][square];
-                break;
-            
-            case wKNIGHT:
-                scoreOpening += pst[opening][KNIGHT][square];
-                scoreEndgame += pst[endgame][KNIGHT][square];
-                break;
-            
-            case wBISHOP:
-                scoreOpening += pst[opening][BISHOP][square];
-                scoreEndgame += pst[endgame][BISHOP][square];
-                break;
-            
-            case wROOK:
-                scoreOpening += pst[opening][ROOK][square];
-                scoreEndgame += pst[endgame][ROOK][square];
-                break;
-            
-            case wQUEEN:
-                scoreOpening += pst[opening][QUEEN][square];
-                scoreEndgame += pst[endgame][QUEEN][square];
-                break;
-            
-            case wKING:
-                scoreOpening += pst[opening][KING][square];
-                scoreEndgame += pst[endgame][KING][square];
-                break;
-
-            case bPAWN:
-                scoreOpening -= pst[opening][PAWN][mirrorSquare[square]];
-                scoreEndgame -= pst[endgame][PAWN][mirrorSquare[square]];
-                break;
-
-            case bKNIGHT:
-                scoreOpening -= pst[opening][KNIGHT][mirrorSquare[square]];
-                scoreEndgame -= pst[endgame][KNIGHT][mirrorSquare[square]];
-                break;
-            
-            case bBISHOP:
-                scoreOpening -= pst[opening][BISHOP][mirrorSquare[square]];
-                scoreEndgame -= pst[endgame][BISHOP][mirrorSquare[square]];
-                break;
-            
-            case bROOK:
-                scoreOpening -= pst[opening][ROOK][mirrorSquare[square]];
-                scoreEndgame -= pst[endgame][ROOK][mirrorSquare[square]];
-                break;
-            
-            case bQUEEN:
-                scoreOpening -= pst[opening][QUEEN][mirrorSquare[square]];
-                scoreEndgame -= pst[endgame][QUEEN][mirrorSquare[square]];
-                break;
-            
-            case bKING:
-                scoreOpening -= pst[opening][KING][mirrorSquare[square]];
-                scoreEndgame -= pst[endgame][KING][mirrorSquare[square]];
-                break;
-            }
+            mg[PCOLOR(p)] += mg_table[p][square];
+            eg[PCOLOR(p)] += eg_table[p][square];
+            gamePhase += gamephaseInc[p];
 
             board.unset_bit(square);
         }
     }
 
-    // interpolate score in the middlegame
-    if (game_phase == middlegame)
-        score = (
-            scoreOpening * game_phase_score +
-            scoreEndgame * (opening_phase_score - game_phase_score)
-        ) / opening_phase_score;
-    else if (game_phase == opening) score = scoreOpening;
-    else if (game_phase == endgame) score = scoreEndgame;
-
-    return (state.current_color == WHITE) ? score: -score;
+    /* tapered eval */
+    int mgScore = mg[state.current_color] - mg[OTHER(state.current_color)];
+    int egScore = eg[state.current_color] - eg[OTHER(state.current_color)];
+    int mgPhase = gamePhase;
+    if (mgPhase > 24) mgPhase = 24; /* in case of early promotion */
+    int egPhase = 24 - mgPhase;
+    return (mgScore * mgPhase + egScore * egPhase) / 24;
 }

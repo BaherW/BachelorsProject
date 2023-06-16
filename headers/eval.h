@@ -10,11 +10,5 @@ endgame,
 middlegame
 };
 
-extern const int opening_phase_score;
-extern const int endgame_phase_score;
-
-extern const int piece_value[2][12];
-
-extern const int pst[2][6][64];
-
+void init_pesto_tables();
 int eval(State &state);
