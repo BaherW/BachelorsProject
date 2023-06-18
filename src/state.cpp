@@ -22,7 +22,7 @@ State::State(string fen)
     zobrist_hash = compute_hash();
 }
 
-bool State::play_move(const Move move, const int &capture_only)
+bool State::play_move(const Move move)
 {
     int source = move.get_source();
     int target = move.get_target();

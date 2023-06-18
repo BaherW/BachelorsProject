@@ -17,6 +17,7 @@ void init_all()
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
     init_all();
 
     UCI uci;

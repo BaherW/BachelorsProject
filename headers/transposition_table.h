@@ -11,10 +11,10 @@
 #define hashfBETA 2
 
 struct HashEntry {
-    U64 hash;           // "almost" unique chess position identifier
-    int depth;          // current search depth
-    int flag;           // flag the type of node (fail-low/fail-high/PV)
-    int val;            // score (alpha/beta/PV)
+    U64 hash;
+    int depth;
+    int flag;
+    int val;
     Move best_move;
 };
 

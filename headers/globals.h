@@ -15,6 +15,10 @@ using namespace std;
 
 #include "bitboard.h"
 
+#define BOARD_SIZE 64
+#define MAX_MOVES 256
+#define INFINITY 50000
+
 enum color
 {
     WHITE,
@@ -47,10 +51,6 @@ enum piece
     bQUEEN,
     bKING
 };
-
-const int BOARD_SIZE = 64;
-const int MAX_MOVES = 256;
-const int INFINITY = 50000;
 
 extern int SQUARE_TO_INDEX(string square);
 

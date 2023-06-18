@@ -39,12 +39,12 @@ void UCI::handle_go()
 {
     tt.clear();
     Searcher searcher;
-    searcher.search(7, state);
+    searcher.search(12, state);
 
     Move best_move = searcher.best_move;
 
-    std::cout << "bestmove ";
-    std::cout << SQUARE_TO_STRING[best_move.get_source()] << SQUARE_TO_STRING[best_move.get_target()];
+    std::cout << "info depth " << searcher.depth_searched << " nodes " << searcher.nodes_searched;
+    std::cout << " \nbestmove " << SQUARE_TO_STRING[best_move.get_source()] << SQUARE_TO_STRING[best_move.get_target()];
 
     int promoted = best_move.get_promoted_piece();
     if (promoted)

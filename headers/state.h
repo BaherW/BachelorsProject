@@ -18,7 +18,7 @@ public:
 
     State();
     State(string fen);
-    bool play_move(const Move move, const int &capture_only = 0);
+    bool play_move(const Move move);
     bool in_check();
     U64 compute_hash();
     void print();

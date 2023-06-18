@@ -4,17 +4,33 @@
 #include "../headers/eval.h"
 #include "../headers/transposition_table.h"
 #include "../headers/zobrist.h"
+#include "sysinfoapi.h"
 
 void Searcher::search(int depth, State state)
 {
     int val;
+    Move temp_best_move;
 
+    stop_time = GetTickCount() + 15000; // 15 second max search for max depth inputted
+
+    // Itterative Deepening
     for (int i = 1; i <= depth; i++)
+    {
+        depth_searched = i;
+        if (timeout_flag)
+            break;
+
+        temp_best_move = best_move;
         val = alpha_beta(i, state, -INFINITY, INFINITY);
+    }
+    best_move = temp_best_move;
 }
 
 int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
 {
+    if ((nodes_searched & 10000) == 0)
+        check_timeout();
+
     int val;
     int hash_flag = hashfALPHA;
 
@@ -36,6 +52,7 @@ int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
     // Null move pruning
     if (depth >= 3 && !check && ply)
     {
+        int reduction = 2;
         State old_state = state;
         ply++;
 
@@ -46,10 +63,13 @@ int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
         state.current_color = !state.current_color;
         state.zobrist_hash ^= current_color_key;
 
-        val = -alpha_beta(depth - 3, state, -beta, -beta + 1);
+        val = -alpha_beta(depth - 1 - reduction, state, -beta, -beta + 1);
 
         ply--;
         state = old_state;
+
+        if (timeout_flag)
+            return 0;
 
         if (val >= beta)
             return beta;
@@ -87,6 +107,9 @@ int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
         ply--;
         state = old_state;
 
+        if (timeout_flag)
+            return 0;
+
         if (val >= beta)
         {
             tt.write(state.zobrist_hash, depth, hashfBETA, beta, best_move);
@@ -97,11 +120,9 @@ int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
         {
             hash_flag = hashfEXACT;
             alpha = val;
+            current_best_move = move_list.moves[i];
             if (ply == 0)
-            {
-                current_best_move = move_list.moves[i];
                 foundPV = true;
-            }
         }
     }
 
@@ -123,6 +144,9 @@ int Searcher::alpha_beta(int depth, State &state, int alpha, int beta)
 
 int Searcher::quiescent(State &state, int alpha, int beta)
 {
+    if ((nodes_searched & 10000) == 0)
+        check_timeout();
+
     nodes_searched++;
 
     int val = eval(state);
@@ -133,7 +157,7 @@ int Searcher::quiescent(State &state, int alpha, int beta)
     if (val > alpha)
         alpha = val;
 
-    MoveList move_list = MoveList(true);
+    MoveList move_list = MoveList(true); // Only appends captures (captures_only flag set)
     generate_moves(move_list, state);
     move_list.sort_moves(state);
     for (int i = 0; i < move_list.num_moves; i++)
@@ -152,6 +176,9 @@ int Searcher::quiescent(State &state, int alpha, int beta)
         ply--;
         state = old_state;
 
+        if (timeout_flag)
+            return 0;
+
         if (val >= beta)
             return beta;
 
@@ -159,4 +186,10 @@ int Searcher::quiescent(State &state, int alpha, int beta)
             alpha = val;
     }
     return alpha;
+}
+
+void Searcher::check_timeout()
+{
+    if (GetTickCount() > stop_time)
+        timeout_flag = 1;
 }
