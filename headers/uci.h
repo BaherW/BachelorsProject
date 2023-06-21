@@ -15,6 +15,8 @@ public:
     State state;
 
     void startUCIProtocol();
+
+private:
     void handle_go();
     void handle_position(const std::string &command);
     void handle_move(const std::string &move);

@@ -53,6 +53,7 @@ enum piece
 };
 
 extern int SQUARE_TO_INDEX(string square);
+extern string SQUARE_TO_STRING[BOARD_SIZE];
 
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
@@ -67,7 +68,6 @@ enum {
 
 extern string PIECE_UNICODE[12];
 
-
 const BitBoard EMPTY_BOARD = BitBoard();
 const BitBoard NOT_A_FILE = BitBoard(0xFEFEFEFEFEFEFEFEull);
 const BitBoard NOT_B_FILE = BitBoard(0xFDFDFDFDFDFDFDFDull);
@@ -76,7 +76,4 @@ const BitBoard NOT_H_FILE = BitBoard(0x7F7F7F7F7F7F7F7Full);
 const BitBoard NOT_AB_FILE = NOT_A_FILE & NOT_B_FILE;
 const BitBoard NOT_GH_FILE = NOT_G_FILE & NOT_H_FILE;
 
-
 extern U64 random_U64();
-
-extern string SQUARE_TO_STRING[BOARD_SIZE];

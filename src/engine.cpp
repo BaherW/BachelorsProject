@@ -17,9 +17,11 @@ void init_all()
 
 int main()
 {
-    SetConsoleOutputCP(CP_UTF8);
     init_all();
 
+    // For printing on windows
+    SetConsoleOutputCP(CP_UTF8);
+    
     UCI uci;
     uci.startUCIProtocol();
 }

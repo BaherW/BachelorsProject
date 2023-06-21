@@ -11,7 +11,7 @@ void Searcher::search(int depth, State state)
     int val;
     Move temp_best_move;
 
-    stop_time = GetTickCount() + 15000; // 15 second max search for max depth inputted
+    stop_time = GetTickCount() + 15000; // 15 second max search for max depth
 
     // Itterative Deepening
     for (int i = 1; i <= depth; i++)

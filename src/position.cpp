@@ -34,7 +34,7 @@ void Position::combine_boards()
 
 bool Position::is_square_attacked(int square, int color)
 {
-    return color ? is_black_attacked(square) : is_white_attacked(square);
+    return color ? is_black_attacking(square) : is_white_attacking(square);
 }
 
 void Position::print()
@@ -162,7 +162,7 @@ void Position::set_position(string fen)
     combine_boards();
 }
 
-bool Position::is_white_attacked(int square)
+bool Position::is_white_attacking(int square)
 {
     if (PAWN_ATTACKS[BLACK][square] & pieces[wPAWN])
         return true;
@@ -178,7 +178,7 @@ bool Position::is_white_attacked(int square)
     return KING_ATTACKS[square] & pieces[wKING];
 }
 
-bool Position::is_black_attacked(int square)
+bool Position::is_black_attacking(int square)
 {
     if (PAWN_ATTACKS[WHITE][square] & pieces[bPAWN])
         return true;

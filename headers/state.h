@@ -20,6 +20,8 @@ public:
     State(string fen);
     bool play_move(const Move move);
     bool in_check();
-    U64 compute_hash();
     void print();
+
+private:
+    U64 compute_hash();
 };

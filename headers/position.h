@@ -23,6 +23,6 @@ private:
     void read_fen(string fen);
     void set_position(string fen);
 
-    bool is_white_attacked(int square);
-    bool is_black_attacked(int square);
+    bool is_white_attacking(int square);
+    bool is_black_attacking(int square);
 };

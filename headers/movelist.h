@@ -22,7 +22,6 @@ static int MVV_LVA[12][12] = {
     100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600};
 
 int score_move(State &state, const Move &move);
-
 static bool compare_moves(State &state, const Move &move1, const Move &move2);
 
 class MoveList

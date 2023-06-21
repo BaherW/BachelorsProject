@@ -1,6 +1,7 @@
 #include "../headers/attacks.h"
 #include "../headers/magic_attacks.h"
 
+// Attack Masks
 BitBoard PAWN_ATTACKS[2][BOARD_SIZE];
 BitBoard KNIGHT_ATTACKS[BOARD_SIZE];
 BitBoard KING_ATTACKS[BOARD_SIZE];
@@ -14,17 +15,21 @@ BitBoard pawn_attacks_mask(int square, int color)
 
     if (color == WHITE)
     {
+        // Capture left
         if (((board >> 7) & NOT_A_FILE))
             attacks |= board >> 7;
 
+        // Capture right
         if (((board >> 9) & NOT_H_FILE))
             attacks |= board >> 9;
     }
     else if (color == BLACK)
     {
+        // Capture right
         if (((board << 9) & NOT_A_FILE))
             attacks |= board << 9;
 
+        // Capture left
         if (((board << 7) & NOT_H_FILE))
             attacks |= board << 7;
     }
@@ -176,28 +181,29 @@ BitBoard knight_attacks_mask(int square)
 
     board.set_bit(square);
 
-    if (((board >> 17) & NOT_H_FILE))
+    // All 8 movement directions
+    if ((board >> 17) & NOT_H_FILE)
         attacks |= board >> 17;
 
-    if (((board >> 15) & NOT_A_FILE))
+    if ((board >> 15) & NOT_A_FILE)
         attacks |= board >> 15;
 
-    if (((board >> 10) & NOT_GH_FILE))
+    if ((board >> 10) & NOT_GH_FILE)
         attacks |= board >> 10;
 
-    if (((board >> 6) & NOT_AB_FILE))
+    if ((board >> 6) & NOT_AB_FILE)
         attacks |= board >> 6;
 
-    if (((board << 17) & NOT_A_FILE))
+    if ((board << 17) & NOT_A_FILE)
         attacks |= board << 17;
 
-    if (((board << 15) & NOT_H_FILE))
+    if ((board << 15) & NOT_H_FILE)
         attacks |= board << 15;
 
-    if (((board << 10) & NOT_AB_FILE))
+    if ((board << 10) & NOT_AB_FILE)
         attacks |= board << 10;
 
-    if (((board << 6) & NOT_GH_FILE))
+    if ((board << 6) & NOT_GH_FILE)
         attacks |= board << 6;
 
     return attacks;
@@ -222,6 +228,7 @@ void generate_knight_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[BLACK].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, wKNIGHT, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, wKNIGHT, 0, 1, 0, 0, 0));
@@ -244,6 +251,7 @@ void generate_knight_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[WHITE].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, bKNIGHT, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, bKNIGHT, 0, 1, 0, 0, 0));
@@ -261,28 +269,29 @@ BitBoard king_attacks_mask(int square)
 
     board.set_bit(square);
 
-    if (((board >> 8)))
+    // All 8 movement directions
+    if (board >> 8)
         attacks |= board >> 8;
 
-    if (((board << 8)))
+    if (board << 8)
         attacks |= board << 8;
 
-    if (((board >> 1) & NOT_H_FILE))
+    if ((board >> 1) & NOT_H_FILE)
         attacks |= board >> 1;
 
-    if (((board << 1) & NOT_A_FILE))
+    if ((board << 1) & NOT_A_FILE)
         attacks |= board << 1;
 
-    if (((board >> 7) & NOT_A_FILE))
+    if ((board >> 7) & NOT_A_FILE)
         attacks |= board >> 7;
 
-    if (((board << 7) & NOT_H_FILE))
+    if ((board << 7) & NOT_H_FILE)
         attacks |= board << 7;
 
-    if (((board >> 9) & NOT_H_FILE))
+    if ((board >> 9) & NOT_H_FILE)
         attacks |= board >> 9;
 
-    if (((board << 9) & NOT_A_FILE))
+    if ((board << 9) & NOT_A_FILE)
         attacks |= board << 9;
 
     return attacks;
@@ -307,6 +316,7 @@ void generate_king_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[BLACK].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, wKING, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, wKING, 0, 1, 0, 0, 0));
@@ -346,6 +356,7 @@ void generate_king_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[WHITE].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, bKING, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, bKING, 0, 1, 0, 0, 0));
@@ -464,6 +475,7 @@ void generate_bishop_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[BLACK].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, wBISHOP, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, wBISHOP, 0, 1, 0, 0, 0));
@@ -486,6 +498,7 @@ void generate_bishop_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[WHITE].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, bBISHOP, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, bBISHOP, 0, 1, 0, 0, 0));
@@ -562,6 +575,7 @@ void generate_rook_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[BLACK].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, wROOK, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, wROOK, 0, 1, 0, 0, 0));
@@ -584,6 +598,7 @@ void generate_rook_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[WHITE].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, bROOK, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, bROOK, 0, 1, 0, 0, 0));
@@ -613,6 +628,7 @@ void generate_queen_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[BLACK].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, wQUEEN, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, wQUEEN, 0, 1, 0, 0, 0));
@@ -635,6 +651,7 @@ void generate_queen_moves(int color, MoveList &move_list, State &state)
                 target = attacks.get_ls1b_index();
 
                 if (!state.position.sides[WHITE].get_bit(target))
+                    // No capture flag if target square is empty
                     move_list.add_move(Move(source, target, bQUEEN, 0, 0, 0, 0, 0));
                 else
                     move_list.add_move(Move(source, target, bQUEEN, 0, 1, 0, 0, 0));
